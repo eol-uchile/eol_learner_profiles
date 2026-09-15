@@ -1,0 +1,95 @@
+## mako
+
+<%! from django.utils.translation import ugettext as _ %>
+<%namespace name='static' file='/static_content.html'/>
+<%block name="bodyclass">view-in-course</%block>
+<%block name="pagetitle">Recomendaciones</%block>
+<%inherit file="/main.html" />
+
+<%block name="headextra">
+    <%static:css group='style-course'/>
+</%block>
+
+<%include file="/courseware/course_navigation.html" args="active_page='eol_leaner_profile'" />
+
+<%
+    ## datos MOCK para recomendaciones (ya no se usa pero lo dejo para testing)
+    summary_short_mock = "Has completado el 50% del contenido asignado para esta semana y tu constancia se ha mantenido estable."
+    summary_full_mock = "Has completado el 50% del contenido asignado para esta semana y tu constancia se ha mantenido estable. Sin embargo, hemos detectado que el tiempo dedicado a revisar los videos ha disminuido un 15% respecto a la semana anterior."
+    summary_text_short = summary_data.get('short', summary_short_mock) if 'summary_data' in capture(lambda: summary_data) and summary_data else summary_short_mock
+    summary_text_full = summary_data.get('full', summary_full_mock) if 'summary_data' in capture(lambda: summary_data) and summary_data else summary_full_mock
+    recs_list = recommendations if 'recommendations' in capture(lambda: recommendations) and recommendations else recommendations_mock
+    is_survey_done = survey_completed if 'survey_completed' in capture(lambda: survey_completed) else False
+
+    metricas_list = UNDEFINED if 'metricas' not in capture(lambda: metricas) else metricas
+    if metricas_list is UNDEFINED or metricas_list is None:
+        metricas_list = [
+            {'key': 'tiempo', 'label': 'Tiempo total', 'value': '1H55M', 'unit': '', 'tooltip': None},
+            {'key': 'contenido', 'label': 'Contenido completado', 'value': 50, 'unit': '%', 'tooltip': 'Porcentaje de avance'},
+            {'key': 'evaluaciones', 'label': 'Promedio evaluaciones', 'value': 67, 'unit': '%', 'tooltip': None},
+            {'key': 'videos', 'label': 'Videos', 'value': '7/10', 'unit': '', 'tooltip': None},
+            {'key': 'constancia', 'label': 'Constancia', 'value': '0.7/1', 'unit': '', 'tooltip': None}
+        ]
+%>
+
+${ styles_fragment | n }
+${ navigation_chart_styles_fragment | n }
+
+<main id="main" aria-label="Content" tabindex="-1">
+    <section class="srl-metrics-bar" id="srl-metrics-bar">
+        <div class="metrics-info-container">
+            <button class="tooltip-trigger" aria-label="${_('Información sobre las métricas')}">ⓘ</button>
+            <div class="tooltip-box" role="tooltip">
+                <strong>Información de métricas:</strong>
+                <ul class="metrics-info-list">
+                    % for metric in metricas_list:
+                        % if metric.get('tooltip'):
+                            <li><strong>${metric['label']}:</strong> ${metric['tooltip']}</li>
+                        % endif
+                    % endfor
+                </ul>
+            </div>
+        </div>
+
+        % for metric in metricas_list:
+            <div class="metric-item">
+                <span class="metric-value">${metric['value']}${metric.get('unit', '')}</span>
+                <div class="metric-details">
+                    <span class="metric-label">${metric['label']}</span>
+                </div>
+            </div>
+        % endfor
+    </section>
+
+    ${ charts_fragment | n }
+
+    <!-- Descomentar despues de preguntar por este dato -->
+    <!-- <footer class="srl-footer">${_('Datos actualizados al')} </footer> -->
+
+    <!-- Sección: Perfil de aprendizaje -->
+    % if profile:
+    <section class="srl-profile" id="srl-profile">
+        <h3 class="hd hd-3">Tu Perfil de Aprendizaje</h3>
+        <div class="profile-dimensions">
+            % for dim_key, dim_data in profile.items():
+                <div class="dimension-card" data-dimension="${dim_key}">
+                    <h4>${dim_data.get('label', dim_key)}</h4>
+                    <p class="dimension-result">
+                        Preferencia: <strong>${dim_data.get('preference', 'N/A')}</strong>
+                        (${dim_data.get('intensity', 'N/A')})
+                    </p>
+                </div>
+            % endfor
+        </div>
+    </section>
+    % endif
+</main>
+
+<script>
+    var userNameActual = ${user_name_json if user_name_json else '""' | n};
+    var navigationWeek = ${navigation_week_json if navigation_week_json else '{}' | n};
+    var navigationChapter = ${navigation_chapter_json if navigation_chapter_json else '{}' | n};
+    var uidActual = ${uid_actual_json if uid_actual_json else 'null' | n};
+</script>
+
+${ scripts_fragment | n }
