@@ -83,7 +83,7 @@
         background: #fff;
         border: 1px solid var(--srl-border);
         border-radius: var(--srl-radius);
-        padding: 1.5em 2.5em 1.25em 1.5em;
+        padding: 24px 32px;
         margin-bottom: 1em;
     }
     .metric-item {
@@ -117,7 +117,7 @@
         word-break: break-word;
     }
 
-    /* Tooltip de barra de métricas */
+    /* tooltip de barra de métricas */
     .metrics-info-container {
         position: absolute;
         top: 10px;
@@ -336,5 +336,54 @@
         .chart-panel h4 { font-size: 0.9em; }
         .chart-scroll-wrap canvas { min-width: 500px; }
         .chart-toggle { float: none; display: flex; margin-bottom: 0.8em; }
+    }
+    @media (max-width: 768px) {
+        .chart-toggle, 
+        .toggle-buttons {
+            display: flex;
+            width: 100%;
+            flex-wrap: wrap; 
+            gap: 4px;
+            margin-bottom: 16px;
+        }
+        .chart-toggle .toggle-btn, 
+        .toggle-buttons button {
+            flex: 1 1 auto;
+            min-width: 80px;
+            font-size: 11px;
+            padding: 8px 4px;
+            text-align: center;
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+    .srl-charts-wrapper {
+        display: flex;
+        flex-direction: column;
+        gap: 48px;
+        margin-top: 32px;
+        margin-bottom: 32px;
+    }
+    .chart-scroll-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 12px;
+        box-shadow: inset -15px 0 15px -15px rgba(0,0,0,0.1);
+    }
+    .chart-scroll-wrapper::-webkit-scrollbar {
+        height: 8px;
+    }
+    .chart-scroll-wrapper::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+    }
+    .chart-scroll-wrapper::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+    .chart-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
     }
 </style>

@@ -1,0 +1,48 @@
+## mako
+<%! from django.utils.translation import ugettext as _ %>
+<section class="chart-panel" id="panel-videos">
+    <div class="chart-header">
+        <div>
+            <h3 class="chart-title">
+                ${_('VISUALIZACIÓN DE VIDEOS')}
+                <div class="chart-info-container">
+                    <button class="tooltip-trigger" aria-label="${_('Información')}">ⓘ</button>
+                    <div class="tooltip-box" role="tooltip">
+                        Muestra el porcentaje de videos vistos y la cantidad de interacciones realizadas en comparación con la mediana del curso.
+                    </div>
+                </div>
+            </h3>
+            <div class="chart-legend">
+                <span class="legend-item">
+                    <i class="legend-bar legend-tu-orange"></i>
+                    ${_('TÚ')}
+                </span>
+                <span class="legend-item">
+                    <i class="legend-marker legend-media"></i>
+                    ${_('MEDIANA DEL CURSO')}
+                </span>
+            </div>
+        </div>
+        <div class="chart-toggle view-toggle-videos">
+            <button type="button" id="btn-view-porcentaje" class="toggle-btn active" onclick="setVideoViewMode('porcentaje')">PORCENTAJE</button>
+            <button type="button" id="btn-view-tiempo" class="toggle-btn" onclick="setVideoViewMode('tiempo')">TIEMPO</button>
+        </div>
+    </div>
+
+    <div class="videos-accordion-wrapper" id="videos-accordion-container">
+    </div>
+    
+    <div id="videos-recommendation" class="navigation-recommendation-wrapper" style="margin-top: 15px;">
+        <div class="navigation-recommendation-box">
+            <div class="recommendation-header">
+                <span style="margin-right: 8px;">💡</span> Recomendación
+            </div>
+            <div class="recommendation-content collapsed" id="rec-videos-content">
+                <p class="recommendation-text" id="rec-videos-text-content">
+                    El sistema registró que tu nivel de interacción con los videos y el porcentaje de visualización se encuentran dentro de los rangos esperados. ¡Sigue así! Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam libero massa, dapibus sit amet tincidunt eget, laoreet ac magna. Quisque efficitur risus quam, in varius mauris semper feugiat. Pellentesque sit amet consectetur nisl. Proin nec tortor at lacus blandit pretium non vel dui. Maecenas dignissim massa aliquet lectus fringilla, ut egestas sem congue.</p>    
+                </p>
+            </div>
+            <button class="recommendation-toggle-btn" id="rec-videos-toggle-btn" onclick="toggleVideosRecommendationText()" style="display: none;">Ver más</button>
+        </div>
+    </div>
+</section>

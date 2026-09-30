@@ -27,16 +27,26 @@
             {'key': 'tiempo', 'label': 'Tiempo total', 'value': '1H55M', 'unit': '', 'tooltip': None},
             {'key': 'contenido', 'label': 'Contenido completado', 'value': 50, 'unit': '%', 'tooltip': 'Porcentaje de avance'},
             {'key': 'evaluaciones', 'label': 'Promedio evaluaciones', 'value': 67, 'unit': '%', 'tooltip': None},
-            {'key': 'videos', 'label': 'Videos', 'value': '7/10', 'unit': '', 'tooltip': None},
-            {'key': 'constancia', 'label': 'Constancia', 'value': '0.7/1', 'unit': '', 'tooltip': None}
+            {'key': 'videos', 'label': 'Videos', 'value': '7/10', 'unit': '', 'tooltip': 'Cantidad de videos'},
         ]
 %>
 
 ${ styles_fragment | n }
 ${ navigation_chart_styles_fragment | n }
+${ evaluaciones_chart_styles_fragment | n }
+${ videos_chart_styles_fragment | n }
 
 <main id="main" aria-label="Content" tabindex="-1">
     <section class="srl-metrics-bar" id="srl-metrics-bar">
+        % for metric in metricas_list:
+            <div class="metric-item">
+                <span class="metric-value">${metric['value']}${metric.get('unit', '')}</span>
+                <div class="metric-details">
+                    <span class="metric-label">${metric['label']}</span>
+                </div>
+            </div>
+        % endfor
+
         <div class="metrics-info-container">
             <button class="tooltip-trigger" aria-label="${_('Información sobre las métricas')}">ⓘ</button>
             <div class="tooltip-box" role="tooltip">
@@ -50,18 +60,13 @@ ${ navigation_chart_styles_fragment | n }
                 </ul>
             </div>
         </div>
-
-        % for metric in metricas_list:
-            <div class="metric-item">
-                <span class="metric-value">${metric['value']}${metric.get('unit', '')}</span>
-                <div class="metric-details">
-                    <span class="metric-label">${metric['label']}</span>
-                </div>
-            </div>
-        % endfor
     </section>
 
-    ${ charts_fragment | n }
+    <div class="srl-charts-wrapper">
+        ${ charts_fragment | n }
+        ${ evaluaciones_charts_fragment | n }
+        ${ videos_charts_fragment | n }
+    </div>
 
     <!-- Descomentar despues de preguntar por este dato -->
     <!-- <footer class="srl-footer">${_('Datos actualizados al')} </footer> -->
@@ -90,6 +95,7 @@ ${ navigation_chart_styles_fragment | n }
     var navigationWeek = ${navigation_week_json if navigation_week_json else '{}' | n};
     var navigationChapter = ${navigation_chapter_json if navigation_chapter_json else '{}' | n};
     var uidActual = ${uid_actual_json if uid_actual_json else 'null' | n};
+    var evaluacionesData = ${evaluaciones_json if evaluaciones_json else '{}' | n};
 </script>
 
 ${ scripts_fragment | n }
