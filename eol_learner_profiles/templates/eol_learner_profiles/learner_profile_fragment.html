@@ -1,0 +1,17 @@
+## mako
+<%! from django.utils.translation import ugettext as _ %>
+<%namespace name='static' file='/static_content.html'/>
+<%block name="bodyclass">view-in-course</%block>
+<%block name="pagetitle">Recomendaciones</%block>
+<%inherit file="/main.html" />
+<%block name="headextra">
+
+<%static:css group='style-course'/>
+</%block>
+<%include file="/courseware/course_navigation.html" args="active_page='eol_leaner_profile'" />
+
+
+<main id="main" aria-label="Content" tabindex="-1">
+    <h2 class="hd hd-2 mt-0">SRL Dashboard</h2>
+
+</main>
