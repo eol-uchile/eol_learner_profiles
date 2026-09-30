@@ -1,0 +1,49 @@
+## mako
+<%! from django.utils.translation import ugettext as _ %>
+<section class="chart-panel" id="panel-evaluaciones">
+    <div class="chart-header">
+        <div>
+            <h3 class="chart-title">
+                ${_('EVALUACIONES')}
+                <div class="chart-info-container">
+                    <button class="tooltip-trigger" aria-label="${_('Información')}">ⓘ</button>
+                    <div class="tooltip-box" role="tooltip">
+                        Compara tus calificaciones y el tiempo invertido en las evaluaciones con la mediana de tu curso.
+                    </div>
+                </div>
+            </h3>
+            <div class="chart-legend">
+                <span class="legend-item">
+                    <i class="legend-bar legend-tu-pink"></i>
+                    ${_('TÚ')}
+                </span>
+                <span class="legend-item">
+                    <i class="legend-marker legend-media"></i>
+                    ${_('MEDIANA DEL CURSO')}
+                </span>
+            </div>
+        </div>
+        <div class="chart-toggle view-toggle-evaluaciones">
+            <button type="button" class="toggle-btn active" data-view="calificaciones" data-target="evaluaciones">${_('CALIFICACIONES')}</button>
+            <button type="button" class="toggle-btn" data-view="tiempo" data-target="evaluaciones">${_('TIEMPO')}</button>
+        </div>
+    </div>
+
+    <div class="chart-scroll-wrap" id="evaluaciones-chart-wrapper">
+        <div id="evaluaciones-chart"></div>
+    </div>
+    
+    <div id="evaluaciones-recommendation" class="navigation-recommendation-wrapper">
+        <div class="navigation-recommendation-box">
+            <div class="recommendation-header">
+                <span style="margin-right: 8px;">💡</span> Recomendaciones
+            </div>
+            <div class="recommendation-content collapsed" id="rec-eval-content">
+                <p class="recommendation-text" id="rec-eval-text-content">
+                    Se ha registrado que tu calificación es mayor que la mediana. ¡Enhorabuena! ¡Buen trabajo! No obstante, tu tiempo dedicado a la evaluación también es superior a la mediana. ¿A qué crees que se debe? Considera revisar tus métodos de estudio para optimizar tus tiempos.
+                </p>
+            </div>
+            <button class="recommendation-toggle-btn" id="rec-eval-toggle-btn" onclick="toggleEvalRecommendationText()" style="display: none;">Ver más</button>
+        </div>
+    </div>
+</section>

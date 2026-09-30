@@ -1,0 +1,40 @@
+## mako
+<%! from django.utils.translation import ugettext as _ %>
+<section class="chart-panel" id="panel-navegacion">
+    <div class="chart-header">
+        <div>
+            <h3 class="chart-title">
+                ${_('NAVEGACIÓN')}
+                <span class="chart-info">ⓘ</span>
+            </h3>
+            <div class="chart-legend">
+                <span class="legend-item">
+                    <i class="legend-bar legend-tu"></i>
+                    ${_('TÚ')}
+                </span>
+                <span class="legend-item">
+                    <i class="legend-marker legend-media"></i>
+                    ${_('MEDIANA DEL CURSO')}
+                </span>
+            </div>
+        </div>
+        <div class="chart-toggle" id="navigation-view-toggle">
+            <button type="button" class="toggle-btn" data-view="chapter">${_('MÓDULO')}</button>
+            <button type="button" class="toggle-btn active" data-view="week">${_('SEMANA')}</button>
+        </div>
+    </div>
+
+    <div class="chart-scroll-wrap" id="navigation-chart-wrapper">
+        <div id="navigation-chart"></div>
+    </div>
+    
+    <div id="navigation-recommendation" class="navigation-recommendation-wrapper">
+        <div class="navigation-recommendation-box">
+            <div class="recommendation-header">💡 Recomendaciones</div>
+            <div class="recommendation-content collapsed" id="rec-content">
+                <p class="recommendation-text" id="rec-text-content">Cargando recomendación...</p>
+            </div>
+            <button class="recommendation-toggle-btn" id="rec-toggle-btn" onclick="toggleRecommendationText()" style="display: none;">Ver más</button>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,115 @@
+<style>
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap; 
+        gap: 16px;
+        margin-bottom: 12px;
+    }
+    .chart-header > div:first-child {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start !important; 
+        justify-content: flex-start;
+        gap: 4px; 
+    }
+    .chart-title {
+        display: flex;
+        align-items: center;
+        margin: 0 !important;
+        font-size: 1.1em;
+        letter-spacing: 0.03em;
+        line-height: 1.2;
+    }
+    .chart-legend {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start !important; 
+        flex-wrap: wrap;
+        gap: 16px;
+        margin: 4px 0 0 0 !important; 
+        padding: 0 !important;
+        width: 100%; 
+    }
+    .chart-info-container {
+        display: inline-block;
+        position: relative;
+        margin-left: 6px;
+    }
+    .chart-info-container .tooltip-trigger {
+        background: none; border: none; cursor: pointer; color: #888;
+        font-size: 0.85em; padding: 2px 6px; border-radius: 50%;
+    }
+    .chart-info-container .tooltip-trigger:hover {
+        color: #005696; background-color: #f0f4f8;
+    }
+    .chart-info-container .tooltip-box {
+        visibility: hidden; opacity: 0; position: absolute;
+        top: 130%; left: 0; width: 260px; background: #2a2a2a; color: #fff;
+        border-radius: 6px; padding: 0.8em 1em; font-size: 0.75rem;
+        text-transform: none; font-weight: normal; line-height: 1.4; letter-spacing: 0;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2); z-index: 1000;
+        transition: opacity 0.2s ease; transform: translateY(-4px);
+    }
+    .chart-info-container:hover .tooltip-box {
+        visibility: visible; opacity: 1; transform: translateY(0);
+    }
+    .d3-tooltip {
+        position: absolute;
+        background: #2a2a2a;
+        color: #fff;
+        border-radius: 6px;
+        padding: 0.8em 1em;
+        font-size: 12px;
+        line-height: 1.5;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+        pointer-events: none;
+        opacity: 0;
+        z-index: 9999;
+        transition: opacity 0.1s ease;
+    }
+    .legend-bar {
+        display: inline-block;
+        width: 12px;
+        height: 8px;
+        border-radius: 2px;
+    }
+    .legend-tu { background: #087db2; } 
+    .legend-tu-green { background: #00a676; } 
+    .legend-marker {
+        display: inline-block;
+        width: 12px;
+        height: 6px;
+        border-radius: 2px;
+    }
+    .legend-media { background: #5d5d5d; }
+    
+    #navigation-chart, #completitud-chart {
+        min-width: 700px;
+    }
+    #navigation-chart svg, #completitud-chart svg { 
+        display: block; width: 100%; height: 100%;
+    }
+    .navigation-bar { fill: #087db2; }
+    .completitud-bar { fill: #00a676; }
+    .chart-average { fill: #5d5d5d; }
+    .chart-axis text { font-size: 11px; }
+    .navigation-recommendation-box {
+        margin-top: 25px; padding: 16px 20px;
+        background-color: #f8f9fa; border: 1px solid #e1e1e1;
+        border-radius: 6px; font-size: 14px; color: #333;
+        line-height: 1.5; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .recommendation-header {
+        font-weight: bold; margin-bottom: 8px; color: #2c3e50;
+        display: flex; align-items: center;
+    }
+    .recommendation-content { overflow: hidden; transition: max-height 0.3s ease-in-out; }
+    .recommendation-content.collapsed { max-height: 26px; position: relative; }
+    .recommendation-toggle-btn {
+        background: none; border: none; color: #0075b6; padding: 4px 0 0 0;
+        cursor: pointer; font-size: 13px; font-weight: 600; text-decoration: underline;
+        margin-top: 4px; display: inline-block;
+    }
+</style>

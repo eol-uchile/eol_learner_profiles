@@ -1,0 +1,310 @@
+## mako
+<script>
+    (function() {
+    'use strict';
+    var MOCK_DATA = {
+        metricas: [
+            { key: 'contenido', label: 'Contenido completado', value: 50, unit: '%', tooltip: 'Porcentaje de avance del contenido asignado por semana/módulo.' },
+            { key: 'tiempo', label: 'Tiempo total', value: '1H55M', unit: '', tooltip: null },
+            { key: 'evaluaciones', label: 'Promedio evaluaciones', value: 67, unit: '%', tooltip: 'Porcentaje logrado / Tiempo empleado en resolver cada evaluación.' },
+            { key: 'videos', label: 'Videos', value: '7/10', unit: '', tooltip: 'Porcentaje visto y nivel de interacción por video.' },
+            { key: 'constancia', label: 'Constancia', value: '0.7/1', unit: '', tooltip: 'Refleja qué tan regular fue tu actividad, en escala 0 a 1.' }
+            ],
+        };
+    
+    function renderMetrics(container, metricas) {
+        container.innerHTML = metricas.map(function(m) {
+            var tip = m.tooltip
+                ? '<button class="tooltip-trigger" data-tooltip="' + m.tooltip.replace(/"/g, '&quot;') + '">ⓘ</button>'
+                : '';
+            return '<div class="metric-item"><span class="metric-value">' + m.value + m.unit +
+                   '</span> <span class="metric-label">' + m.label + '</span>' + tip + '</div>';
+        }).join('');
+    }
+})();
+</script>
+
+<!-- Script para resumen colapsable -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var summarySection = document.getElementById('srl-summary');
+    var toggleBtn = document.getElementById('toggle-summary-btn');
+
+    if (toggleBtn && summarySection) {
+        toggleBtn.addEventListener('click', function() {
+            var isCollapsed = summarySection.getAttribute('data-collapsed') === 'true';
+            var toggleText = toggleBtn.querySelector('.toggle-text');
+            var toggleIcon = toggleBtn.querySelector('.toggle-icon');
+
+            if (isCollapsed) {
+                summarySection.setAttribute('data-collapsed', 'false');
+                toggleBtn.setAttribute('aria-expanded', 'true');
+                if (toggleText) toggleText.textContent = 'Ocultar resumen';
+                if (toggleIcon) toggleIcon.textContent = '▴';
+            } else {
+                summarySection.setAttribute('data-collapsed', 'true');
+                toggleBtn.setAttribute('aria-expanded', 'false');
+                if (toggleText) toggleText.textContent = 'Leer resumen completo';
+                if (toggleIcon) toggleIcon.textContent = '▾';
+            }
+        });
+    }
+});
+</script>
+
+<script>
+(function () {
+    'use strict';
+
+    import('https://cdn.jsdelivr.net/npm/d3@7/+esm')
+        .then(function (d3Module) {
+            renderNavigationChart(d3Module, 'week');
+            setupNavigationToggle(d3Module);
+        })
+        .catch(function (error) {
+            console.error('No se pudo cargar D3:', error);
+        });
+
+    function getShortChapterName(name, index) {
+        var match = name.match(/^Módulo\s+(\d+)\./i);
+        if (match) {
+            return 'Módulo ' + match[1] + ':...';
+        }
+        if (index === 0 && name.toLowerCase() === 'bienvenida') {
+            return 'Bienvenida';
+        }
+        if (name.length > 18) {
+            return name.substring(0, 18) + '...';
+        }
+        return name;
+    }
+    
+    function getXLabel(d, view, index) {
+        if (view === 'week') {
+            return 'Semana ' + d.week;
+        }
+        return getShortChapterName(d.name, index);
+    }
+
+    function renderNavigationChart(d3, view) {
+        var container = document.getElementById('navigation-chart');
+        if (!container) return;
+        container.innerHTML = '';
+
+        var source = (view === 'week') ? navigationWeek : navigationChapter;
+        var data = source && source.grouped_data ? source.grouped_data : [];
+
+        if (!data.length) {
+            container.innerHTML = '<p>No hay datos disponibles.</p>';
+            return;
+        }
+
+        var margin = { top: 20, right: 20, bottom: view === 'chapter' ? 120 : 60, left: 60 };
+        var height = 200;
+        var chartHeight = height + margin.top + margin.bottom;
+
+        var parentContainer = document.getElementById('navigation-chart');
+        var parentWidth = parentContainer ? parentContainer.clientWidth : 800;
+        var idealMinWidth = (view === 'chapter') ? data.length * 120 : data.length * 55;
+        var containerWidth = Math.max(parentWidth || 300, idealMinWidth);
+
+        var width = containerWidth - margin.left - margin.right;
+
+        var svg = d3.select('#navigation-chart').append('svg')
+            .attr('width', containerWidth)
+            .attr('height', chartHeight);
+
+        var chart = svg.append('g')
+            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+        var labels = data.map(function (d, index) { return getXLabel(d, view, index); });
+
+        var x = d3.scaleBand().domain(labels).range([0, width]).padding(0.2);
+
+        var weekData = (typeof navigationWeek !== 'undefined' && navigationWeek.grouped_data) ? navigationWeek.grouped_data : [];
+        var chapterData = (typeof navigationChapter !== 'undefined' && navigationChapter.grouped_data) ? navigationChapter.grouped_data : [];
+        var allData = weekData.concat(chapterData);
+
+        var rawMaxHours = d3.max(allData, function (d) {
+            return Math.max(d.individual_time || 0, d.average_time || 0) / 60;
+        }) || 1;
+
+        var maxValueHours = rawMaxHours * 1.15;
+        var y = d3.scaleLinear().domain([0, maxValueHours]).nice().range([height, 0]);
+
+        // 1. Dibujar grilla de fondo y eje Y
+        chart.append('g')
+            .attr('class', 'grid')
+            .call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat(''))
+            .selectAll('line').style('stroke', '#eef2f5').style('stroke-opacity', '0.7').style('shape-rendering', 'crispEdges');
+
+        chart.selectAll('.grid path').style('stroke-width', '0');
+
+        chart.append('g')
+            .attr('class', 'navigation-axis')
+            .call(d3.axisLeft(y).ticks(5).tickFormat(function (d) { return d.toFixed(1); }));
+
+        // eje x
+        var xAxis = chart.append('g')
+            .attr('class', 'navigation-axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(d3.axisBottom(x));
+
+        
+        if (view === 'chapter') {
+            xAxis.selectAll("text")
+                .style("text-anchor", "end")
+                .attr("dy", ".15em");
+        }
+
+        // eje y
+        chart.append('text')
+            .attr('class', 'axis-label')
+            .attr('transform', 'rotate(-90)')
+            .attr('y', -margin.left + 15)
+            .attr('x', -height / 2)
+            .attr('dy', '1em')
+            .style('text-anchor', 'middle')
+            .style('font-size', '12px')
+            .style('fill', '#666')
+            .text('Tiempo (Horas)');
+
+        
+        // barras (modulos) | lineas (semanas)
+        if (view === 'week') {
+            // lineas (semanas)
+
+            // estudiante
+            var lineTu = d3.line()
+                .x(function (d, i) { return x(getXLabel(d, view, i)) + x.bandwidth() / 2; })
+                .y(function (d) { return y((d.individual_time || 0) / 60); });
+
+            // mediana
+            var lineMedia = d3.line()
+                .x(function (d, i) { return x(getXLabel(d, view, i)) + x.bandwidth() / 2; })
+                .y(function (d) { return y((d.average_time || 0) / 60); });
+
+            chart.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#5d5d5d')
+                .attr('stroke-width', 2)
+                .attr('stroke-dasharray', '5,5')
+                .attr('d', lineMedia);
+
+            chart.append('path')
+                .datum(data)
+                .attr('fill', 'none')
+                .attr('stroke', '#087db2')
+                .attr('stroke-width', 3)
+                .attr('d', lineTu);
+
+            chart.selectAll('.dot-punto')
+                .data(data).enter().append('circle')
+                .attr('class', 'dot-punto')
+                .attr('cx', function (d, i) { return x(getXLabel(d, view, i)) + x.bandwidth() / 2; })
+                .attr('cy', function (d) { return y((d.individual_time || 0) / 60); })
+                .attr('r', 5)
+                .attr('fill', '#087db2')
+                .style('cursor', 'pointer')
+                .append('title')
+                .text(function (d) {
+                    return 'Semana ' + d.week + '\nTu tiempo: ' + formatTime(d.individual_time) + '\nMediana: ' + formatTime(d.average_time);
+                });
+
+        } else {
+            // barras (modulos)
+            
+            // estudiante
+            chart.selectAll('.navigation-bar')
+                .data(data).enter().append('rect')
+                .attr('class', 'navigation-bar')
+                .attr('x', function (d, index) { return x(getXLabel(d, view, index)); })
+                .attr('y', function (d) { return y((d.individual_time || 0) / 60); })
+                .attr('width', x.bandwidth())
+                .attr('height', function (d) { return height - y((d.individual_time || 0) / 60); })
+                .attr('rx', 1)
+                .style('cursor', 'pointer')
+                .append('title')
+                .text(function (d) {
+                    return d.name + '\nTu tiempo: ' + formatTime(d.individual_time) + '\nMediana: ' + formatTime(d.average_time);
+                });
+
+            // mediana
+            chart.selectAll('.navigation-average')
+                .data(data).enter().append('rect')
+                .attr('class', 'navigation-average')
+                .attr('x', function (d, index) { return x(getXLabel(d, view, index)) - 2; })
+                .attr('y', function (d) { return (y((d.average_time || 0) / 60) - 3); })
+                .attr('width', x.bandwidth() + 4)
+                .attr('height', 6)
+                .attr('rx', 2)
+                .style('pointer-events', 'none'); 
+        }
+
+        renderRecommendation(view);
+    }
+
+    function setupNavigationToggle(d3) {
+        var buttons = document.querySelectorAll('#navigation-view-toggle .toggle-btn');
+        buttons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var view = button.getAttribute('data-view');
+                buttons.forEach(function (btn) { btn.classList.remove('active'); });
+                button.classList.add('active');
+                renderNavigationChart(d3, view);
+            });
+        });
+    }
+
+    function formatTime(minutes) {
+        if (!minutes) return '0 min';
+        minutes = Math.round(minutes);
+        var hours = Math.floor(minutes / 60);
+        var remainingMinutes = minutes % 60;
+        if (hours > 0) {
+            if (remainingMinutes === 0) return hours + 'h';
+            return hours + 'h ' + remainingMinutes + 'min';
+        }
+        return minutes + ' min';
+    }
+    
+    function renderRecommendation(view) {
+        var recTextElement = document.getElementById('rec-text-content');
+        var contentDiv = document.getElementById('rec-content');
+        var btn = document.getElementById('rec-toggle-btn');
+        if (!recTextElement) return;
+
+        var firstName = (typeof userNameActual !== 'undefined' && userNameActual) 
+            ? userNameActual.split(' ')[0] 
+            : 'Estudiante';
+
+        var staticText = '¡Hola, ' + firstName + '! El sistema registra que has analizado a fondo el video de esta semana, pausando y repasando varias secciones. ¡Excelente nivel de compromiso! Si sientes que algún concepto del video está siendo especialmente complejo o desafiante, recuerda que no tienes que resolverlo a solas: envía un correo a tu profesor/a, auxiliar o escríbe en el foro de U-Cursos para resolver tus dudas y así poder ayudarte en lo que te está impidiendo comprender los contenidos del video.';
+        recTextElement.textContent = staticText;
+
+        var isLongText = staticText.length > 90;
+        if (isLongText) {
+            contentDiv.classList.add('collapsed');
+            btn.style.display = 'inline-block';
+            btn.textContent = 'Ver más';
+        } else {
+            contentDiv.classList.remove('collapsed');
+            btn.style.display = 'none';
+        }
+    }
+
+    window.toggleRecommendationText = function() {
+        var content = document.getElementById('rec-content');
+        var btn = document.getElementById('rec-toggle-btn');
+        if (content.classList.contains('collapsed')) {
+            content.classList.remove('collapsed');
+            content.style.maxHeight = content.scrollHeight + 'px';
+            btn.textContent = 'Ver menos';
+        } else {
+            content.classList.add('collapsed');
+            content.style.maxHeight = '26px';
+            btn.textContent = 'Ver más';
+        }
+    };
+})();
+</script>
