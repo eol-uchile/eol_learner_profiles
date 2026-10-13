@@ -1,8 +1,6 @@
 ## mako
 <%! from django.utils.translation import ugettext as _ %>
 <section class="chart-panel" id="panel-mixto-srl">
-    
-    <!-- grafico completitud -->
     <div class="chart-header">
         <div>
             <h3 class="chart-title">
@@ -10,7 +8,7 @@
                 <div class="chart-info-container">
                     <button class="tooltip-trigger" aria-label="${_('Información')}">ⓘ</button>
                     <div class="tooltip-box" role="tooltip">
-                        Muestra tu porcentaje de avance del contenido asignado, comparado con la mediana del resto del curso.
+                        ${_('Muestra tu porcentaje de avance del contenido asignado, comparado con la mediana del resto del curso.')}
                     </div>
                 </div>
             </h3>
@@ -34,7 +32,7 @@
         <div id="completitud-chart"></div>
     </div>
 
-    <!-- grafico navegacion -->
+    <!-- Grafico Tiempo de Navegacion -->
     <div class="chart-header" style="margin-top: 3em;">
         <div>
             <h3 class="chart-title">
@@ -42,7 +40,7 @@
                 <div class="chart-info-container">
                     <button class="tooltip-trigger" aria-label="${_('Información')}">ⓘ</button>
                     <div class="tooltip-box" role="tooltip">
-                        Refleja el tiempo que has invertido navegando en la plataforma frente al tiempo que destina la mediana del curso.
+                        ${_('Refleja el tiempo que has invertido navegando en la plataforma frente al tiempo que destina la mediana del curso.')}
                     </div>
                 </div>
             </h3>
@@ -66,14 +64,14 @@
         <div id="navigation-chart"></div>
     </div>
     
-    <!-- recomendacion -->
+    <!-- Recomendacion -->
     <div id="mixto-recommendation" class="navigation-recommendation-wrapper">
         <div class="navigation-recommendation-box">
             <div class="recommendation-header">
-                <span style="margin-right: 8px;">💡</span> Recomendaciones
+                💡 ${_('Recomendación')}
             </div>
             <div class="recommendation-content collapsed" id="rec-content">
-                <p class="recommendation-text" id="rec-text-content">Cargando recomendación...</p>
+                <p class="recommendation-text" id="rec-text-content">${_('Cargando recomendación...')}</p>
             </div>
             <button class="recommendation-toggle-btn" id="rec-toggle-btn" onclick="toggleRecommendationText()" style="display: none;">Ver más</button>
         </div>

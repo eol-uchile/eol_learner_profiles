@@ -105,8 +105,7 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
             raise Http404()
 
         context = self.get_context(request, course_id, course, course_key)
-        # html = render_to_string('eol_learner_profiles/learner_profile_fragment.html', context)
-        html = render_to_string('eol_learner_profiles/learner_profile_fragment_v2.html', context)
+        html = render_to_string('eol_learner_profiles/learner_profile_fragment.html', context)
         fragment = Fragment(html)
         return fragment
 
@@ -120,7 +119,6 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
 
         user_name = request.user.profile.name if hasattr(request.user, 'profile') else request.user.username
 
-        # Iterar sobre los subsecciones evaluadas
         for subsection in course_grade.subsection_grades.values():
             if subsection.format: 
                 score_pct = (subsection.percent_graded * 100) if subsection.percent_graded else 0.0
@@ -149,13 +147,10 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
             start_date="2026-03-01",
             end_date="2026-09-06",
         )
-        
+
         context = {
             "course": course,
-            'page_url': reverse(
-                'learner_profile_view',
-                kwargs={'course_id': six.text_type(course_key)}
-            ),
+            'page_url': reverse('learner_profile_view', kwargs={'course_id': six.text_type(course_key)}),
             "content": None,
             "max_unit": None,
             "navigation_week_json": json.dumps(navigation_week or {}),
@@ -164,13 +159,12 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
             "user_name_json": json.dumps(user_name),
             "evaluaciones_json": json.dumps(evaluaciones_data),
         }
+
+        # Renderizado de html
         context['styles_fragment'] = render_to_string('eol_learner_profiles/_styles.html', context)
-        context['charts_fragment'] = render_to_string('eol_learner_profiles/_navigation_chart.html', context)
-        context['videos_charts_fragment'] = render_to_string('eol_learner_profiles/_videos_chart.html', context)
-        context['navigation_chart_styles_fragment'] = render_to_string('eol_learner_profiles/_navigation_chart_styles.html', context)
-        context['videos_chart_styles_fragment'] = render_to_string('eol_learner_profiles/_videos_chart_styles.html', context)
         context['scripts_fragment'] = render_to_string('eol_learner_profiles/_scripts.html', context)
+        context['charts_fragment'] = render_to_string('eol_learner_profiles/_navigation_chart.html', context)
         context['evaluaciones_charts_fragment'] = render_to_string('eol_learner_profiles/_evaluaciones_chart.html', context)
-        context['evaluaciones_chart_styles_fragment'] = render_to_string('eol_learner_profiles/_evaluaciones_chart_styles.html', context)
+        context['videos_charts_fragment'] = render_to_string('eol_learner_profiles/_videos_chart.html', context)
 
         return context

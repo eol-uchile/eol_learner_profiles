@@ -8,7 +8,7 @@
                 <div class="chart-info-container">
                     <button class="tooltip-trigger" aria-label="${_('Información')}">ⓘ</button>
                     <div class="tooltip-box" role="tooltip">
-                        Compara tus calificaciones y el tiempo invertido en las evaluaciones con la mediana de tu curso.
+                        ${_('Compara tus calificaciones y el tiempo invertido en las evaluaciones con la mediana de tu curso.')}
                     </div>
                 </div>
             </h3>
@@ -36,12 +36,10 @@
     <div id="evaluaciones-recommendation" class="navigation-recommendation-wrapper">
         <div class="navigation-recommendation-box">
             <div class="recommendation-header">
-                <span style="margin-right: 8px;">💡</span> Recomendaciones
+                💡 ${_('Recomendación')}
             </div>
             <div class="recommendation-content collapsed" id="rec-eval-content">
-                <p class="recommendation-text" id="rec-eval-text-content">
-                    Se ha registrado que tu calificación es mayor que la mediana. ¡Enhorabuena! ¡Buen trabajo! No obstante, tu tiempo dedicado a la evaluación también es superior a la mediana. ¿A qué crees que se debe? Considera revisar tus métodos de estudio para optimizar tus tiempos.
-                </p>
+                <p class="recommendation-text" id="rec-eval-text-content">${_('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla maximus eleifend faucibus. Cras ullamcorper pretium nulla. Sed lobortis molestie ante, ut hendrerit elit ullamcorper in. Ut mollis venenatis tristique. Praesent nec est nec nisl sodales viverra. Cras nec urna sit amet leo ullamcorper tincidunt. Nulla facilisi.')}</p>
             </div>
             <button class="recommendation-toggle-btn" id="rec-eval-toggle-btn" onclick="toggleEvalRecommendationText()" style="display: none;">Ver más</button>
         </div>
