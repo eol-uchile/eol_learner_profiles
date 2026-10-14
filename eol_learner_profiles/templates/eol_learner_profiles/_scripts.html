@@ -1,4 +1,3 @@
-<!-- _scripts.html -->
 <script>
 (function () {
     'use strict';
@@ -10,61 +9,165 @@
     var currentVideoView = 'porcentaje';
 
     // ==========================================
-    // 1. DATOS MOCKUP (se reemplazaran)
+    // 1. Procesamiento json
     // ==========================================
-    var MOCK_COMPLETITUD = {
-        chapter: [
-            { name: 'Módulo 1:', individual_time: 100, average_time: 100 }, { name: 'Módulo 2:', individual_time: 100, average_time: 95 },
-            { name: 'Módulo 3:', individual_time: 95, average_time: 80 }, { name: 'Módulo 4:', individual_time: 96, average_time: 96 },
-            { name: 'Módulo 5:', individual_time: 91, average_time: 96 }, { name: 'Módulo 6:', individual_time: 85, average_time: 88 },
-            { name: 'Módulo 7:', individual_time: 100, average_time: 98 }, { name: 'Módulo 8:', individual_time: 97, average_time: 94 },
-            { name: 'Módulo 9:', individual_time: 91, average_time: 95 }, { name: 'Módulo 10:', individual_time: 90, average_time: 88 },
-            { name: 'Módulo 11:', individual_time: 100, average_time: 96 }, { name: 'Módulo 12:', individual_time: 75, average_time: 85 },
-            { name: 'Módulo 13:', individual_time: 50, average_time: 53 }, { name: 'Módulo 14:', individual_time: 15, average_time: 25 }
-        ],
-        week: [
-            { week: 1, date_label: 'Lunes 07 de Sept', individual_time: 20, average_time: 30 },
-            { week: 2, date_label: 'Lunes 14 de Sept', individual_time: 45, average_time: 50 },
-            { week: 3, date_label: 'Lunes 21 de Sept', individual_time: 60, average_time: 55 },
-            { week: 4, date_label: 'Lunes 28 de Sept', individual_time: 80, average_time: 75 },
-            { week: 5, date_label: 'Lunes 05 de Oct', individual_time: 95, average_time: 85 }
-        ]
-    };
+    var userNavWeek = typeof navigationWeek !== 'undefined' ? navigationWeek : [];
+    var userNavChapter = typeof navigationChapter !== 'undefined' ? navigationChapter : [];
+    var userVideos = typeof videosData !== 'undefined' ? videosData : [];
+    var sysAgregaciones = typeof agregacionesData !== 'undefined' ? agregacionesData : { MEDIAN: {} };
+    var dataCalificaciones = (typeof evaluacionesData !== 'undefined' && evaluacionesData) ? evaluacionesData : [];
 
-    var MOCK_NAVEGACION = {
-        chapter: [
-            { name: 'Módulo 1: Bienvenida', individual_time: 240, average_time: 210 }, { name: 'Módulo 2: Introducción', individual_time: 180, average_time: 190 },
-            { name: 'Módulo 3: Desarrollo', individual_time: 120, average_time: 115 }, { name: 'Módulo 4: Conclusión', individual_time: 120, average_time: 135 },
-            { name: 'Módulo 5: Evaluación', individual_time: 120, average_time: 125 }, { name: 'Módulo 6: Retroalimentación', individual_time: 180, average_time: 190 },
-            { name: 'Módulo 7: Resumen', individual_time: 120, average_time: 100 }, { name: 'Módulo 8: Aplicación', individual_time: 175, average_time: 175 },
-            { name: 'Módulo 9: Evaluación', individual_time: 120, average_time: 110 }, { name: 'Módulo 10: Cierre', individual_time: 180, average_time: 150 },
-            { name: 'Módulo 11: Reforzamiento', individual_time: 240, average_time: 230 }, { name: 'Módulo 12: Avance', individual_time: 180, average_time: 210 },
-            { name: 'Módulo 13: Práctica', individual_time: 120, average_time: 130 }, { name: 'Módulo 14: Evaluación Final', individual_time: 180, average_time: 200 }
-        ],
-        week: [
-            { week: 1, date_label: 'Lunes 07 de Sept', individual_time: 120, average_time: 140 },
-            { week: 2, date_label: 'Lunes 14 de Sept', individual_time: 180, average_time: 160 },
-            { week: 3, date_label: 'Lunes 21 de Sept', individual_time: 210, average_time: 180 },
-            { week: 4, date_label: 'Lunes 28 de Sept', individual_time: 90, average_time: 150 },
-            { week: 5, date_label: 'Lunes 05 de Oct', individual_time: 240, average_time: 200 }
-        ]
-    };
+    var medianNavWeek = sysAgregaciones.MEDIAN?.metrics_per_week || [];
+    var medianNavChapter = sysAgregaciones.MEDIAN?.metrics_per_structure || [];
+    var medianVideos = sysAgregaciones.MEDIAN?.metrics_per_video || [];
 
-    var MOCK_VIDEOS = [
-        { title: "Módulo 1 - Introducción", progress_user: 98, progress_median: 100, time_user: 3.4, time_median: 3.45, time_total: 3.5, videos_count: 2, items: [ { title: "1.1 - Bienvenida", progress_user: 100, progress_median: 100, inter_user: 5, inter_median: 6, time_user: 0.5, time_median: 0.5, time_total: 0.5 }, { title: "1.2 - Objetivos", progress_user: 85, progress_median: 90, inter_user: 3, inter_median: 3, time_user: 2.8, time_median: 2.9, time_total: 3 } ] },
-        { title: "Módulo 2 - Tema 1", progress_user: 75, progress_median: 80, time_user: 3.0, time_median: 3.2, time_total: 4.0, videos_count: 5, items: [ { title: "2.1 - Conceptos", progress_user: 100, progress_median: 90, inter_user: 4, inter_median: 4, time_user: 1.0, time_median: 0.9, time_total: 1.0 }, { title: "2.2 - Ejemplos", progress_user: 50, progress_median: 70, inter_user: 1, inter_median: 3, time_user: 1.5, time_median: 2.1, time_total: 3.0 } ] },
-        { title: "Módulo 3 - Tema 2", progress_user: 40, progress_median: 60, time_user: 2.0, time_median: 3.0, time_total: 5.0, videos_count: 7, items: [ {title: "3.1 - Introducción", progress_user: 30, progress_median: 50, inter_user: 2, inter_median: 3, time_user: 0.3, time_median: 0.5, time_total: 1.0 } ] }
-    ];
+    var DATA_COMPLETITUD = { week: [], chapter: [] };
+    var DATA_NAVEGACION = { week: [], chapter: [] };
+    var DATA_VIDEOS = [];
 
-    var MOCK_EVALUACIONES_TIEMPO = [
-        { name: 'Quiz 1', short_label: 'Q1', min: 1.3, q1: 1.8, median: 2.4, q3: 3.0, max: 3.6, time_user: 2.7 },
-        { name: 'Quiz 2', short_label: 'Q2', min: 1.0, q1: 1.4, median: 2.3, q3: 3.5, max: 3.9, time_user: 2.4 },
-        { name: 'Quiz 3', short_label: 'Q3', min: 1.4, q1: 1.8, median: 2.5, q3: 3.2, max: 3.7, time_user: 2.8 },
-        { name: 'Tarea 1', short_label: 'T1', min: 0.9, q1: 1.5, median: 2.2, q3: 2.9, max: 3.5, time_user: 2.0 },
-        { name: 'Tarea 2', short_label: 'T2', min: 1.5, q1: 2.0, median: 2.5, q3: 3.1, max: 3.6, time_user: 2.7 },
-        { name: 'Quiz 4', short_label: 'Q4', min: 0.6, q1: 1.2, median: 1.7, q3: 2.3, max: 2.9, time_user: 1.8 },
-        { name: 'Quiz 5', short_label: 'Q5', min: 0.3, q1: 1.0, median: 1.5, q3: 2.0, max: 2.6, time_user: 1.9 }
-    ];
+    // --- 1.1 Semanas ---
+    function getMedianWeek(weekNum, key) {
+        var found = medianNavWeek.find(function(m) { return m.week === weekNum; });
+        return found ? (parseFloat(found[key]) || 0) : 0;
+    }
+
+    userNavWeek.forEach(function(d) {
+        var compMed = getMedianWeek(d.week, 'COMPLETITUD_POR_SEMANA');
+        var navMed = getMedianWeek(d.week, 'TIEMPO_NAVEGACION_POR_SEMANA');
+
+        DATA_COMPLETITUD.week.push({
+            week: d.week,
+            date_label: 'Semana ' + d.week,
+            individual_time: (parseFloat(d.COMPLETITUD_POR_SEMANA) || 0) * 100, // 0.18 a 18%
+            average_time: compMed * 100
+        });
+
+        DATA_NAVEGACION.week.push({
+            week: d.week,
+            date_label: 'Semana ' + d.week,
+            individual_time: (parseFloat(d.TIEMPO_NAVEGACION_POR_SEMANA) || 0) / 60, // Segundos a Minutos
+            average_time: navMed / 60
+        });
+    });
+
+    // --- 1.2 Capítulos (Módulos) ---
+    function aggregateChapters(dataArr) {
+        var groups = {};
+        dataArr.forEach(function(d) {
+            if (!d.chapter_name) return;
+            var cName = d.chapter_name;
+            if (!groups[cName]) {
+                groups[cName] = { name: cName, vis_time: 0, dur_time: 0, order: d.chapter_order || 99 };
+            }
+            groups[cName].vis_time += parseFloat(d.visualization_time) || 0;
+            groups[cName].dur_time += parseFloat(d.vertical_duration) || 0;
+        });
+        return Object.values(groups).sort(function(a, b) { return a.order - b.order; });
+    }
+
+    var aggUserChapter = aggregateChapters(userNavChapter);
+    var aggMedianChapter = aggregateChapters(medianNavChapter);
+
+    aggUserChapter.forEach(function(uCh) {
+        var mCh = aggMedianChapter.find(function(m) { return m.name === uCh.name; }) || { vis_time: 0, dur_time: 1 };
+        
+        var compUser = uCh.dur_time > 0 ? (uCh.vis_time / uCh.dur_time) * 100 : 0;
+        var compMed = mCh.dur_time > 0 ? (mCh.vis_time / mCh.dur_time) * 100 : 0;
+        
+        DATA_COMPLETITUD.chapter.push({
+            name: uCh.name,
+            individual_time: Math.min(compUser, 100),
+            average_time: Math.min(compMed, 100)
+        });
+
+        DATA_NAVEGACION.chapter.push({
+            name: uCh.name,
+            individual_time: uCh.vis_time / 60,
+            average_time: mCh.vis_time / 60
+        });
+    });
+
+    // --- 1.3 Videos ---
+    var videoGroups = {};
+    userVideos.forEach(function(v) {
+        var cName = v.chapter_name || "Otros Videos";
+        if (!videoGroups[cName]) {
+            videoGroups[cName] = {
+                title: cName, progress_user: 0, progress_median: 0,
+                time_user: 0, time_median: 0, time_total: 0,
+                videos_count: 0, items: [], order: v.chapter_order || 99
+            };
+        }
+        
+        var vMed = medianVideos.find(function(mv) { return mv.vertical_name === v.vertical_name && mv.chapter_name === v.chapter_name; }) || {};
+
+        var userTime = (parseFloat(v.visualization_time) || 0) / 60; // a Minutos
+        var medTime = (parseFloat(vMed.visualization_time) || 0) / 60;
+        var totalTime = (parseFloat(v.video_duration) || 120) / 60;
+
+        var vItem = {
+            title: (v.vertical_name || "Video") + (v.block_name ? " - " + v.block_name : ""),
+            progress_user: (parseFloat(v.visualization_percent) || 0) * 100,
+            progress_median: (parseFloat(vMed.visualization_percent) || 0) * 100,
+            inter_user: parseFloat(v.play_count || 0) + parseFloat(v.pause_count || 0),
+            inter_median: parseFloat(vMed.play_count || 0) + parseFloat(vMed.pause_count || 0),
+            time_user: userTime,
+            time_median: medTime,
+            time_total: totalTime
+        };
+        videoGroups[cName].items.push(vItem);
+        videoGroups[cName].videos_count++;
+        videoGroups[cName].time_user += userTime;
+        videoGroups[cName].time_median += medTime;
+        videoGroups[cName].time_total += totalTime;
+    });
+
+    Object.values(videoGroups).forEach(function(g) {
+        if(g.videos_count > 0) {
+            var sumUserProg = 0, sumMedProg = 0;
+            g.items.forEach(function(i) { sumUserProg += i.progress_user; sumMedProg += i.progress_median; });
+            g.progress_user = sumUserProg / g.videos_count;
+            g.progress_median = sumMedProg / g.videos_count;
+        }
+        DATA_VIDEOS.push(g);
+    });
+    DATA_VIDEOS.sort(function(a,b) { return a.order - b.order; });
+
+    // --- 1.4. Evaluaciones de Tiempo  ---
+    var DATA_EVALUACIONES_TIEMPO = [];
+    var sysP33Chapter = sysAgregaciones.P_33?.metrics_per_structure || [];
+    var sysP66Chapter = sysAgregaciones.P_66?.metrics_per_structure || [];
+
+    var evaluacionesUsuario = userNavChapter.filter(function(d) { return d.graded === true || d.graded === 'True'; });
+
+    evaluacionesUsuario.forEach(function(ev, index) {
+        var name = ev.sequential_name || 'Evaluación ' + (index + 1);
+        
+        var mEv = medianNavChapter.find(function(m) { return m.sequential_name === name; }) || {};
+        var p33Ev = sysP33Chapter.find(function(m) { return m.sequential_name === name; }) || {};
+        var p66Ev = sysP66Chapter.find(function(m) { return m.sequential_name === name; }) || {};
+
+        var tUser = (parseFloat(ev.visualization_time) || 0) / 60;
+        var tMed = (parseFloat(mEv.visualization_time) || 0) / 60;
+        var tQ1 = (parseFloat(p33Ev.visualization_time) || 0) / 60;
+        var tQ3 = (parseFloat(p66Ev.visualization_time) || 0) / 60;
+
+        if(!tMed && tUser) tMed = tUser;
+        if(!tQ1) tQ1 = tMed * 0.7;
+        if(!tQ3) tQ3 = tMed * 1.3;
+
+        DATA_EVALUACIONES_TIEMPO.push({
+            name: name,
+            short_label: 'E' + (index + 1),
+            time_user: tUser,
+            median: tMed,
+            q1: tQ1,
+            q3: tQ3,
+            min: tQ1 * 0.5, // Límite inferior del bigote
+            max: tQ3 * 1.5  // Límite superior del bigote
+        });
+    });
+
 
     // ==========================================
     // 2. Tooltips & Recomendaciones
@@ -124,14 +227,13 @@
         btn.textContent = isCollapsed ? 'Ver menos' : 'Ver más';
     }
 
-    // Funciones onclick del HTML
     window.toggleRecommendationText = function() { toggleRec('rec-content', 'rec-toggle-btn'); };
     window.toggleVideosRecommendationText = function() { toggleRec('rec-videos-content', 'rec-videos-toggle-btn'); };
     window.toggleEvalRecommendationText = function() { toggleRec('rec-eval-content', 'rec-eval-toggle-btn'); };
 
 
     // ==========================================
-    // 3. Inicialiacion
+    // 3. Inicializacion
     // ==========================================
     import('https://cdn.jsdelivr.net/npm/d3@7/+esm').then(function (d3Module) {
         globalD3 = d3Module;
@@ -144,7 +246,6 @@
         console.error('No se pudo cargar D3:', error);
     });
 
-    // Formateadores de texto
     function getXLabel(d, view) {
         if (view === 'week') return d.date_label || ('Semana ' + d.week);
         var match = d.name.match(/^Módulo (\d+)/i);
@@ -162,7 +263,7 @@
 
 
     // ==========================================
-    // 4. Graficos: Completitu Acumulada y Tiempo de Navegacion
+    // 4. Graficos: Completitud y Navegacion
     // ==========================================
     function renderChart(d3, chartType, view) {
         var containerId = chartType === 'completitud' ? 'completitud-chart' : 'navigation-chart';
@@ -170,7 +271,12 @@
         if (!container) return;
         container.innerHTML = '';
 
-        var data = chartType === 'completitud' ? MOCK_COMPLETITUD[view] : MOCK_NAVEGACION[view];
+        var data = chartType === 'completitud' ? DATA_COMPLETITUD[view] : DATA_NAVEGACION[view];
+        if(!data || data.length === 0) {
+            container.innerHTML = '<p style="padding:20px; color:#666;">No hay datos disponibles para esta vista.</p>';
+            return;
+        }
+
         var margin = { top: 20, right: 20, bottom: view === 'chapter' ? 80 : 60, left: 60 };
         var height = 200;
         
@@ -189,14 +295,16 @@
         var x = d3.scaleBand().domain(labels).range([0, width]).padding(0.2);
 
         var isCompletitud = chartType === 'completitud';
+        // Para tiempo (minutos), dividimos por 60 en el eje Y para mostrar Horas
         var maxValue = isCompletitud ? 100 : d3.max(data, function(d) { return Math.max(d.individual_time, d.average_time) / 60; }) * 1.15;
+        if (!maxValue || maxValue === 0) maxValue = isCompletitud ? 100 : 1; 
+
         var yAxisLabel = isCompletitud ? 'AVANCE (%)' : 'TIEMPO (H)';
         var colorBarra = isCompletitud ? 'completitud-bar' : 'navigation-bar';
         var lineColor = isCompletitud ? '#00a676' : '#087db2';
         
         var y = d3.scaleLinear().domain([0, maxValue]).nice().range([height, 0]);
 
-        // Dibujar Ejes y Grilla
         chart.append('g').attr('class', 'grid')
             .call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat(''))
             .selectAll('line').style('stroke', '#eef2f5').style('stroke-opacity', '0.7');
@@ -205,18 +313,25 @@
         chart.append('g').attr('class', 'chart-axis')
             .call(d3.axisLeft(y).ticks(5).tickFormat(function (d) { return isCompletitud ? d : d.toFixed(1); }));
 
-        chart.append('g').attr('class', 'chart-axis')
+        var xAxis = chart.append('g').attr('class', 'chart-axis')
             .attr('transform', 'translate(0,' + height + ')')
             .call(d3.axisBottom(x));
+
+        if(view === 'chapter') {
+            xAxis.selectAll("text")  
+                .style("text-anchor", "end")
+                .attr("dx", "-.8em")
+                .attr("dy", ".15em")
+                .attr("transform", "rotate(-45)");
+        }
 
         chart.append('text').attr('transform', 'rotate(-90)').attr('y', -margin.left + 15).attr('x', -height / 2)
             .attr('dy', '1em').style('text-anchor', 'middle').style('font-size', '11px').style('fill', '#666').text(yAxisLabel);
 
-        // Generador de HTML para Tooltip
         function getTooltipHtml(d) {
             var label = view === 'week' ? (d.date_label || 'Semana ' + d.week) : d.name;
-            var valTu = isCompletitud ? d.individual_time + '%' : formatTime(d.individual_time);
-            var valMedia = isCompletitud ? d.average_time + '%' : formatTime(d.average_time);
+            var valTu = isCompletitud ? d.individual_time.toFixed(1) + '%' : formatTime(d.individual_time);
+            var valMedia = isCompletitud ? d.average_time.toFixed(1) + '%' : formatTime(d.average_time);
             return '<strong>' + label + '</strong><br>Tú: ' + valTu + '<br>Mediana del curso: ' + valMedia;
         }
 
@@ -241,7 +356,7 @@
             chart.selectAll('.dot-punto').data(data).enter().append('circle')
                 .attr('cx', function (d) { return x(getXLabel(d, view)) + x.bandwidth() / 2; })
                 .attr('cy', function (d) { return isCompletitud ? y(d.individual_time) : y(d.individual_time / 60); })
-                .attr('r', 8).attr('fill', lineColor).style('cursor', 'pointer')
+                .attr('r', 6).attr('fill', lineColor).style('cursor', 'pointer')
                 .on('mouseover touchstart', function(e, d) { showTooltip(e, getTooltipHtml(d)); })
                 .on('mousemove touchmove', moveTooltip)
                 .on('mouseout touchend', hideTooltip);
@@ -264,11 +379,10 @@
                 .attr('width', x.bandwidth() + 4).attr('height', 6).attr('rx', 2).style('pointer-events', 'none');
         }
 
-        // Recomendacion
         var recElement = document.getElementById('rec-text-content');
         if (recElement) {
             var firstName = (typeof userNameActual !== 'undefined' && userNameActual) ? userNameActual.split(' ')[0] : 'Estudiante';
-            recElement.textContent = '¡Hola, ' + firstName + '! El sistema registró que las unidades que has completado hasta esta semana están en la mediana de tu curso y el tiempo que has pasado en la plataforma está por sobre la mediana del que ha destinado tu curso. Te recomendamos mantener este ritmo de estudio.';
+            recElement.textContent = '¡Hola, ' + firstName + '! El sistema ha analizado tus registros recientes y ya estamos mostrando tu progreso en base a los datos reales del curso.';
             applyRecommendationCollapse('rec-content', 'rec-toggle-btn');
         }
     }
@@ -281,29 +395,42 @@
         var container = document.getElementById('videos-accordion-container');
         if (!container) return;
 
+        if(!DATA_VIDEOS || DATA_VIDEOS.length === 0) {
+            container.innerHTML = '<p style="padding:20px; color:#666;">No hay datos de video para mostrar.</p>';
+            return;
+        }
+
         var htmlString = '';
         var chevronSvg = '<svg class="chevron-icon" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>';
-        var isTime = currentVideoView === 'tiempo';
 
-        MOCK_VIDEOS.forEach(function(modulo, index) {
+        DATA_VIDEOS.forEach(function(modulo, index) {
             var isOpen = index === 0 ? 'open' : '';
-            var valUser = isTime ? modulo.time_user : modulo.progress_user;
-            var valMedia = isTime ? modulo.time_median : modulo.progress_median;
-            var valMax = isTime ? modulo.time_total : 100;
             
-            var widthUserPct = Math.min((valUser / valMax) * 100, 100);
-            var leftMediaPct = Math.min((valMedia / valMax) * 100, 100);
-            var labelLeft = isTime ? '0H' : '0%';
-            var labelRight = isTime ? valMax + 'H' : '100%';
-            var formatSuffix = isTime ? 'H' : '%';
+            var valUser = Math.min(Math.max(modulo.progress_user || 0, 0), 100);
+            var valMedia = Math.min(Math.max(modulo.progress_median || 0, 0), 100);
+            
+            var labelLeft = '0%';
+            var labelRight = '100%';
+
+            var timeUserStr = formatTime(modulo.time_user * 60);
+            var timeMedStr = formatTime(modulo.time_median * 60);
 
             htmlString += '<details class="video-module-details" ' + isOpen + '>';
             htmlString += '<summary class="video-module-summary">' + chevronSvg;
             htmlString += '<div class="video-title">' + modulo.title + '</div>';
             htmlString += '<div class="video-bar-wrapper">';
-            htmlString += '  <div class="video-bar-bg tooltip-target" data-name="' + modulo.title + '" data-tu="' + valUser + formatSuffix + '" data-media="' + valMedia + formatSuffix + '">';
-            htmlString += '    <div class="video-bar-fill" style="width: ' + widthUserPct + '%;"></div>';
-            htmlString += '    <div class="video-median-marker" style="left: ' + leftMediaPct + '%;"></div>';
+            
+            var tooltipAttr = 'data-name="' + modulo.title + '" ' +
+                              'data-tu="' + Math.round(valUser) + '%" ' +
+                              'data-media="' + Math.round(valMedia) + '%" ' +
+                              'data-inter-user="' + Math.round(modulo.inter_user || 0) + '" ' +
+                              'data-inter-media="' + Math.round(modulo.inter_median || 0) + '" ' +
+                              'data-tiempo-user="' + timeUserStr + '" ' +
+                              'data-tiempo-media="' + timeMedStr + '"';
+
+            htmlString += '  <div class="video-bar-bg tooltip-target" ' + tooltipAttr + '>';
+            htmlString += '    <div class="video-bar-fill" style="width: ' + valUser + '%;"></div>';
+            htmlString += '    <div class="video-median-marker" style="left: ' + valMedia + '%;"></div>';
             htmlString += '  </div>';
             htmlString += '  <div class="video-bar-labels"><span>' + labelLeft + '</span><span>' + labelRight + '</span></div>';
             htmlString += '</div><div class="video-meta">(' + modulo.videos_count + ' videos)</div></summary>';
@@ -311,19 +438,27 @@
             if (modulo.items && modulo.items.length > 0) {
                 htmlString += '<div class="video-items-list">';
                 modulo.items.forEach(function(video) {
-                    var vUser = isTime ? video.time_user : video.progress_user;
-                    var vMedia = isTime ? video.time_median : video.progress_median;
-                    var vMax = isTime ? video.time_total : 100;
-                    var vWidthUser = Math.min((vUser / vMax) * 100, 100);
-                    var vLeftMedia = Math.min((vMedia / vMax) * 100, 100);
+                    var vUser = Math.min(Math.max(video.progress_user || 0, 0), 100);
+                    var vMedia = Math.min(Math.max(video.progress_median || 0, 0), 100);
+                    
+                    var vTimeUserStr = formatTime((video.time_user || 0) * 60);
+                    var vTimeMedStr = formatTime((video.time_median || 0) * 60);
+
+                    var vTooltipAttr = 'data-name="' + video.title + '" ' +
+                                       'data-tu="' + Math.round(vUser) + '%" ' +
+                                       'data-media="' + Math.round(vMedia) + '%" ' +
+                                       'data-inter-user="' + Math.round(video.inter_user || 0) + '" ' +
+                                       'data-inter-media="' + Math.round(video.inter_median || 0) + '" ' +
+                                       'data-tiempo-user="' + vTimeUserStr + '" ' +
+                                       'data-tiempo-media="' + vTimeMedStr + '"';
 
                     htmlString += '<div class="video-item-row"><div class="video-title">' + video.title + '</div>';
                     htmlString += '  <div class="video-bar-wrapper">';
-                    htmlString += '    <div class="video-bar-bg tooltip-target" data-name="' + video.title + '" data-tu="' + vUser + formatSuffix + '" data-media="' + vMedia + formatSuffix + '">';
-                    htmlString += '      <div class="video-bar-fill" style="width: ' + vWidthUser + '%;"></div>';
-                    htmlString += '      <div class="video-median-marker" style="left: ' + vLeftMedia + '%;"></div>';
-                    htmlString += '    </div><div class="video-bar-labels"><span>' + labelLeft + '</span><span>' + (isTime ? vMax + 'H' : '100%') + '</span></div>';
-                    htmlString += '  </div><div class="video-meta">Interacciones: ' + video.inter_user + ' Mediana: ' + video.inter_median + '</div></div>';
+                    htmlString += '    <div class="video-bar-bg tooltip-target" ' + vTooltipAttr + '>';
+                    htmlString += '      <div class="video-bar-fill" style="width: ' + vUser + '%;"></div>';
+                    htmlString += '      <div class="video-median-marker" style="left: ' + vMedia + '%;"></div>';
+                    htmlString += '    </div><div class="video-bar-labels"><span>0%</span><span>100%</span></div>';
+                    htmlString += '  </div></div>';
                 });
                 htmlString += '</div>';
             }
@@ -332,10 +467,20 @@
 
         container.innerHTML = htmlString;
         
-        // Atar eventos de tooltip a los elementos inyectados
         document.querySelectorAll('#videos-accordion-container .tooltip-target').forEach(function(target) {
             function handleHover(e) {
-                var html = '<strong>' + target.getAttribute('data-name') + '</strong><br>Tú: ' + target.getAttribute('data-tu') + '<br>Mediana del curso: ' + target.getAttribute('data-media');
+                var name = target.getAttribute('data-name');
+                var tuPct = target.getAttribute('data-tu');
+                var medPct = target.getAttribute('data-media');
+                var interUser = target.getAttribute('data-inter-user');
+                var interMed = target.getAttribute('data-inter-media');
+                var tiempoUser = target.getAttribute('data-tiempo-user');
+                var tiempoMed = target.getAttribute('data-tiempo-media');
+
+                var html = '<strong>' + name + '</strong><br>' +
+                           '📊 Avance: Tú: ' + tuPct + ' | Mediana: ' + medPct + '<br>' +
+                           '🖱️ Interacciones: ' + interUser + ' | Mediana: ' + interMed + '<br>' +
+                           '⏱️ Tiempo visualizado: ' + tiempoUser + ' | Mediana: ' + tiempoMed;
                 showTooltip(e, html);
             }
             target.addEventListener('mouseover', handleHover);
@@ -350,14 +495,6 @@
     }
 
     window.setVideoViewMode = function(mode) {
-        currentVideoView = mode;
-        var btnPorcentaje = document.getElementById('btn-view-porcentaje');
-        var btnTiempo = document.getElementById('btn-view-tiempo');
-        if (btnPorcentaje && btnTiempo) {
-            btnPorcentaje.classList.toggle('active', mode === 'porcentaje');
-            btnTiempo.classList.toggle('active', mode === 'tiempo');
-        }
-        renderVideosChart();
     };
 
 
@@ -369,13 +506,12 @@
         if (!container) return;
         container.innerHTML = '';
 
-        var dataCalificaciones = (typeof evaluacionesData !== 'undefined' && evaluacionesData) ? evaluacionesData : [];
         if (view === 'calificaciones' && !dataCalificaciones.length) {
-            container.innerHTML = '<p>No hay evaluaciones disponibles aún.</p>';
+            container.innerHTML = '<p style="padding:20px; color:#666;">No hay evaluaciones disponibles aún.</p>';
             return;
         }
 
-        var activeData = view === 'calificaciones' ? dataCalificaciones : MOCK_EVALUACIONES_TIEMPO;
+        var activeData = view === 'calificaciones' ? dataCalificaciones : DATA_EVALUACIONES_TIEMPO;
 
         if (view === 'calificaciones') {
             var contadoresTipo = {};
@@ -387,24 +523,36 @@
             });
         }
 
-        var margin = { top: 20, right: 20, bottom: 60, left: 60 };
-        var height = 200;
+        var margin = { top: 20, right: 20, bottom: 80, left: 60 }; 
+        var height = 220; 
+        var totalSvgHeight = height + margin.top + margin.bottom;
+        
         var parentWidth = container.parentElement.clientWidth || 800;
         var idealMinWidth = activeData.length * 70;
         var width = Math.max(parentWidth, idealMinWidth) - margin.left - margin.right;
+        
+        container.style.overflowX = 'auto';
+        container.style.overflowY = 'hidden';
+        container.style.height = totalSvgHeight + 'px';
+        
+        var parentWrap = container.closest('.chart-scroll-wrap');
+        if (parentWrap) parentWrap.style.height = 'auto';
 
         var svg = d3.select('#evaluaciones-chart').append('svg')
             .attr('width', width + margin.left + margin.right)
-            .attr('height', height + margin.top + margin.bottom);
+            .attr('height', totalSvgHeight)
+            .style('width', (width + margin.left + margin.right) + 'px')
+            .style('height', totalSvgHeight + 'px');
 
         var chart = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
         var x = d3.scaleBand().domain(activeData.map(function (d, i) { return i; })).range([0, width]).padding(0.3);
-
-        var maxValue = view === 'tiempo' ? 4 : 100;
-        var yAxisLabel = view === 'tiempo' ? 'TIEMPO (H)' : 'CALIFICACIÓN (%)';
+        
+        var maxValue = view === 'tiempo' ? d3.max(activeData, function(d) { return Math.max(d.max || 0, d.time_user || 0); }) * 1.1 : 100;
+        if (!maxValue || maxValue === 0) maxValue = view === 'tiempo' ? 10 : 100;
+        
+        var yAxisLabel = view === 'tiempo' ? 'TIEMPO (MIN)' : 'CALIFICACIÓN (%)';
         var y = d3.scaleLinear().domain([0, maxValue]).nice().range([height, 0]);
 
-        // Ejes y Grilla
         chart.append('g').attr('class', 'grid').call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat('')).selectAll('line').style('stroke', '#eef2f5').style('stroke-opacity', '0.7');
         chart.selectAll('.grid path').style('stroke-width', '0');
         chart.append('g').attr('class', 'chart-axis').call(d3.axisLeft(y).ticks(5));
@@ -413,8 +561,8 @@
 
         function getEvalTooltipHtml(d) {
             var label = view === 'calificaciones' ? ((d.eval_type ? d.eval_type + ': ' : '') + d.name) : d.name;
-            var valTu = view === 'calificaciones' ? d.score_user + '%' : d.time_user.toFixed(1) + ' hrs';
-            var valMedia = view === 'calificaciones' ? d.score_median + '%' : d.median.toFixed(1) + ' hrs';
+            var valTu = view === 'calificaciones' ? d.score_user + '%' : d.time_user.toFixed(1) + ' min';
+            var valMedia = view === 'calificaciones' ? d.score_median + '%' : d.median.toFixed(1) + ' min';
             return '<strong>' + label + '</strong><br>Tú: ' + valTu + '<br>Mediana del curso: ' + valMedia;
         }
 
@@ -447,7 +595,7 @@
     }
 
     // ==========================================
-    // 7. Resto de eventos
+    // 7. Otros eventos
     // ==========================================
     function setupToggles(d3) {
         var buttons = document.querySelectorAll('.chart-toggle .toggle-btn:not(#btn-view-porcentaje):not(#btn-view-tiempo)');

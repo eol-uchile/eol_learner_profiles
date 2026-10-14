@@ -76,10 +76,12 @@
 
 <script>
     var userNameActual = ${user_name_json if user_name_json else '""' | n};
-    var navigationWeek = ${navigation_week_json if navigation_week_json else '{}' | n};
-    var navigationChapter = ${navigation_chapter_json if navigation_chapter_json else '{}' | n};
+    var navigationWeek = ${navigation_week_json if navigation_week_json else '[]' | n};
+    var navigationChapter = ${navigation_chapter_json if navigation_chapter_json else '[]' | n};
+    var videosData = ${videos_json if videos_json else '[]' | n};
+    var agregacionesData = ${agregaciones_json if agregaciones_json else '{}' | n};
     var uidActual = ${uid_actual_json if uid_actual_json else 'null' | n};
-    var evaluacionesData = ${evaluaciones_json if evaluaciones_json else '{}' | n};
+    var evaluacionesData = ${evaluaciones_json if evaluaciones_json else '[]' | n};
 </script>
 
 ${ scripts_fragment | n }

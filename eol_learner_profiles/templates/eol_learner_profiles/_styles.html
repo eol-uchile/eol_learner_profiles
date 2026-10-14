@@ -1,4 +1,3 @@
-<!-- _styles.html -->
 <style>
     :root {
         /* Colores Base */
@@ -19,7 +18,7 @@
     }
 
     /* ==========================================
-       1. ESTILOS BASE Y LAYOUT
+       1. Estilo base
        ========================================== */
     html { scroll-behavior: smooth; }
     .content-wrapper { padding: 0px; }
@@ -40,7 +39,7 @@
     }
 
     /* ==========================================
-       2. RESUMEN Y MÉTRICAS GLOBALES
+       2. Resumen de métricas y tooltips
        ========================================== */
     .srl-summary {
         background: #fff; border: 1px solid var(--srl-border); border-radius: var(--srl-radius);
@@ -140,7 +139,6 @@
     .chart-legend { display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 16px; margin: 4px 0 0 0; padding: 0; width: 100%; font-size: 0.85em; color: #555; }
     .legend-item { display: flex; align-items: center; gap: 0.4em; }
     
-    /* Indicadores de Leyenda */
     .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
     .dot-tu { background: var(--tu-default); }
     .dot-media { background: var(--media-light); }
@@ -154,9 +152,8 @@
     .legend-tu-pink { background: var(--tu-pink); } 
     .legend-media { background: var(--media-dark); }
 
-    /* Scroll Wrappers y Controles */
-    .chart-scroll-wrap { position: relative; height: 280px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
-    .chart-panel canvas { max-height: 280px; }
+    .chart-scroll-wrap { position: relative; height: auto; min-height: 340px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
+    .chart-panel canvas { max-height: 340px; }
     
     .chart-scroll-wrapper { width: 100%; overflow-x: auto; overflow-y: hidden; padding-bottom: 12px; box-shadow: inset -15px 0 15px -15px rgba(0,0,0,0.1); }
     .chart-scroll-wrapper::-webkit-scrollbar { height: 8px; }
@@ -164,14 +161,38 @@
     .chart-scroll-wrapper::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     .chart-scroll-wrapper::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-    .chart-toggle { display: inline-flex; border: 1px solid var(--srl-border); border-radius: 20px; overflow: hidden; margin-bottom: 1em; float: right; }
-    .chart-toggle .toggle-btn { border: none; background: #f2f2f2; padding: 0.35em 1em; font-size: 0.8em; cursor: pointer; color: #555; }
-    .chart-toggle .toggle-btn.active { background: var(--srl-color-primary); color: #fff; }
+    .chart-toggle { 
+        display: inline-flex; border: 1px solid var(--srl-border); border-radius: 20px; 
+        overflow: hidden; margin-bottom: 1em; float: right; 
+    }
+    
+    .chart-toggle .toggle-btn { 
+        border: none; background: #f2f2f2; padding: 0.35em 1em; 
+        font-size: 0.8em; cursor: pointer; color: #555; 
+        /* Bloqueo de estilos nativos de edX */
+        outline: none !important; 
+        box-shadow: none !important;
+        text-shadow: none !important;
+        background-image: none !important;
+    }
+    
+    .chart-toggle .toggle-btn:focus,
+    .chart-toggle .toggle-btn:active {
+        outline: none !important;
+        box-shadow: none !important;
+    }
+    
+    .chart-toggle .toggle-btn.active,
+    .chart-toggle .toggle-btn.active:focus,
+    .chart-toggle .toggle-btn.active:hover { 
+        background: var(--srl-color-primary) !important; 
+        color: #fff !important; 
+    }
 
     /* Estilos específicos D3 SVG */
     #navigation-chart, #completitud-chart, #evaluaciones-chart { min-width: 700px; }
-    #navigation-chart svg, #completitud-chart svg, #evaluaciones-chart svg { display: block; width: 100%; height: 100%; }
-    
+    #navigation-chart svg, #completitud-chart svg, #evaluaciones-chart svg { display: block; width: 100%; height: auto; }
+
     .navigation-bar { fill: var(--tu-blue); }
     .completitud-bar { fill: var(--tu-green); }
     .evaluaciones-bar { fill: var(--tu-pink); }
@@ -179,7 +200,7 @@
     .chart-axis text { font-size: 11px; }
 
     /* ==========================================
-       4. ACORDEÓN DE VIDEOS
+       4. Gráfico tipo acordeon de videos
        ========================================== */
     .videos-accordion-wrapper { margin-top: 20px; border: 1px solid #d9d9d9; border-radius: 4px; background: #f9f9f9; max-height: 380px; overflow-y: auto; }
     .video-module-details { border-bottom: 1px solid #d9d9d9; }
@@ -204,7 +225,7 @@
     .video-item-row { display: flex; align-items: center; padding: 12px 20px 12px 50px; border-top: 1px solid #efefef; }
 
     /* ==========================================
-       5. RECOMENDACIONES Y PERFIL
+       5. Recomendaciones
        ========================================== */
     .recommendations-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25em; margin-top: 1em; }
     .recommendation-card { background: #fff; border: 1px solid var(--srl-border); border-left: 4px solid var(--srl-color-primary); border-radius: var(--srl-radius); padding: 1.2em; box-shadow: 0 2px 5px rgba(0,0,0,0.03); transition: transform 0.2s ease, box-shadow 0.2s ease; }
@@ -227,7 +248,7 @@
     .srl-footer { text-align: right; color: #999; font-size: 0.8em; margin-top: 1.5em; }
 
     /* ==========================================
-       6. RESPONSIVE / MEDIA QUERIES
+       6. Responsive
        ========================================== */
     @media (max-width: 1024px) {
         .srl-charts-grid { grid-template-columns: 1fr; }
