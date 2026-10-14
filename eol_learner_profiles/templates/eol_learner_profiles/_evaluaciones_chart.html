@@ -39,7 +39,19 @@
                 💡 ${_('Recomendación')}
             </div>
             <div class="recommendation-content collapsed" id="rec-eval-content">
-                <p class="recommendation-text" id="rec-eval-text-content">${_('Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla maximus eleifend faucibus. Cras ullamcorper pretium nulla. Sed lobortis molestie ante, ut hendrerit elit ullamcorper in. Ut mollis venenatis tristique. Praesent nec est nec nisl sodales viverra. Cras nec urna sit amet leo ullamcorper tincidunt. Nulla facilisi.')}</p>
+                <div class="recommendation-text" id="rec-eval-text-content">
+                    <p style="margin-top: 0;">${_('El sistema registra que has invertido 3:01 en las subsecciones evaluadas, lo que está cercano a la mediana de tu curso, mientras el promedio de tus calificaciones se encuentra en el tercio inferior.')}</p>
+                    
+                    <p>${_('Para convertir ese tiempo de dedicación en aprendizajes sólidos y mejores calificaciones, te sugerimos:')}</p>
+                    
+                    <ol style="margin-left: 1.5em; margin-bottom: 1em;">
+                        <li style="margin-bottom: 0.5em;">${_('Detener la lectura lineal y elaborar un mapa conceptual, esquema o resumen con tus propias palabras por cada tema revisado.')}</li>
+                        <li style="margin-bottom: 0.5em;">${_('Resolver al menos dos ejercicios prácticos del mismo nivel de dificultad antes de rendir la siguiente evaluación.')}</li>
+                        <li style="margin-bottom: 0.5em;">${_('Consultar activamente tus dudas con docentes o compañeros/as cuando identifiques contenidos que resulten difíciles de comprender.')}</li>
+                    </ol>
+                    
+                    <p style="margin-bottom: 0;">${_('¿Qué técnicas o formas de estudio utilizas actualmente al preparar un tema y cómo sientes que te ayudan al momento de responder? Dedicar tiempo a descubrir tu mejor manera de aprender es una inversión valiosa para alcanzar tus metas académicas.')}</p>
+                </div>
             </div>
             <button class="recommendation-toggle-btn" id="rec-eval-toggle-btn" onclick="toggleEvalRecommendationText()" style="display: none;">Ver más</button>
         </div>

@@ -379,12 +379,14 @@
                 .attr('width', x.bandwidth() + 4).attr('height', 6).attr('rx', 2).style('pointer-events', 'none');
         }
 
-        var recElement = document.getElementById('rec-text-content');
-        if (recElement) {
-            var firstName = (typeof userNameActual !== 'undefined' && userNameActual) ? userNameActual.split(' ')[0] : 'Estudiante';
-            recElement.textContent = '¡Hola, ' + firstName + '! El sistema ha analizado tus registros recientes y ya estamos mostrando tu progreso en base a los datos reales del curso.';
-            applyRecommendationCollapse('rec-content', 'rec-toggle-btn');
-        }
+        // var recElement = document.getElementById('rec-text-content');
+        // if (recElement) {
+        //     var firstName = (typeof userNameActual !== 'undefined' && userNameActual) ? userNameActual.split(' ')[0] : 'Estudiante';
+        //     recElement.textContent = '¡Hola, ' + firstName + '! El sistema ha analizado tus registros recientes y ya estamos mostrando tu progreso en base a los datos reales del curso.';
+        //     applyRecommendationCollapse('rec-content', 'rec-toggle-btn');
+        // }
+
+        applyRecommendationCollapse('rec-content', 'rec-toggle-btn');
     }
 
 
