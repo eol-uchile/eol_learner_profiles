@@ -16,10 +16,10 @@
     metricas_list = UNDEFINED if 'metricas' not in capture(lambda: metricas) else metricas
     if metricas_list is UNDEFINED or metricas_list is None:
         metricas_list = [
-            {'key': 'tiempo', 'label': _('Tiempo total'), 'value': '1H55M', 'unit': '', 'tooltip': None},
-            {'key': 'contenido', 'label': _('Contenido completado'), 'value': 50, 'unit': '%', 'tooltip': _('Porcentaje de avance')},
-            {'key': 'evaluaciones', 'label': _('Promedio evaluaciones'), 'value': 67, 'unit': '%', 'tooltip': None},
-            {'key': 'videos', 'label': _('Videos'), 'value': '7/10', 'unit': '', 'tooltip': _('Cantidad de videos')},
+            {'key': 'tiempo', 'label': _('Tiempo total'), 'value': '1H55M', 'unit': '', 'tooltip': _('Tiempo total de navegación registrado en el curso.')},
+            {'key': 'contenido', 'label': _('Contenido completado'), 'value': 50, 'unit': '%', 'tooltip': _('Porcentaje del contenido del curso completado.')},
+            {'key': 'evaluaciones', 'label': _('Promedio evaluaciones'), 'value': 67, 'unit': '%', 'tooltip': _('Promedio de las evaluaciones rendidas.')},
+            {'key': 'videos', 'label': _('Videos'), 'value': '7/10', 'unit': '', 'tooltip': _('Cantidad de videos visualizados.')},
         ]
 %>
 
