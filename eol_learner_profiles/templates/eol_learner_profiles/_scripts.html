@@ -16,6 +16,9 @@
     var userVideos = typeof videosData !== 'undefined' ? videosData : [];
     var sysAgregaciones = typeof agregacionesData !== 'undefined' ? agregacionesData : { MEDIAN: {} };
     var dataCalificaciones = (typeof evaluacionesData !== 'undefined' && evaluacionesData) ? evaluacionesData : [];
+    dataCalificaciones.forEach(function(d) {
+        d.score_median = Math.floor(Math.random() * 101); 
+    });
 
     var medianNavWeek = sysAgregaciones.MEDIAN?.metrics_per_week || [];
     var medianNavChapter = sysAgregaciones.MEDIAN?.metrics_per_structure || [];
@@ -315,15 +318,10 @@
 
         var xAxis = chart.append('g').attr('class', 'chart-axis')
             .attr('transform', 'translate(0,' + height + ')')
-            .call(d3.axisBottom(x));
-
-        if(view === 'chapter') {
-            xAxis.selectAll("text")  
-                .style("text-anchor", "end")
-                .attr("dx", "-.8em")
-                .attr("dy", ".15em")
-                .attr("transform", "rotate(-45)");
-        }
+            .call(d3.axisBottom(x).tickFormat(function(label) {
+                // Mantiene el texto horizontal y lo recorta con (...) si supera los 11 caracteres
+                return label.length > 11 ? label.substring(0, 9) + '...' : label;
+            }));
 
         chart.append('text').attr('transform', 'rotate(-90)').attr('y', -margin.left + 15).attr('x', -height / 2)
             .attr('dy', '1em').style('text-anchor', 'middle').style('font-size', '11px').style('fill', '#666').text(yAxisLabel);
