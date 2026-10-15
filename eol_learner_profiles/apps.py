@@ -35,4 +35,10 @@ class EolLearnerProfilesConfig(AppConfig):
                 SettingsType.COMMON: {
                     PluginSettings.RELATIVE_PATH: 'settings.common'},
             },
-        }}
+        },
+        'mako_template_dirs': {
+            ProjectType.LMS: 'templates',
+            ProjectType.CMS: 'templates',
+        }
+    }
+

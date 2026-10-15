@@ -1,0 +1,55 @@
+## mako
+<%! from django.utils.translation import ugettext as _ %>
+<section class="chart-panel" id="panel-videos">
+    <div class="chart-header">
+        <div>
+            <h3 class="chart-title">
+                ${_('VISUALIZACIÓN DE VIDEOS')}
+                <div class="chart-info-container">
+                    <button class="tooltip-trigger" aria-label="${_('Información')}">ⓘ</button>
+                    <div class="tooltip-box" role="tooltip">
+                        ${_('Porcentaje visualizado de cada video comparado con la mediana de los participantes del curso. También se indica la cantidad de interacciones registradas en cada video.')}
+                    </div>
+                </div>
+            </h3>
+            <div class="chart-legend">
+                <span class="legend-item">
+                    <i class="legend-bar legend-tu-orange"></i>
+                    ${_('TÚ')}
+                </span>
+                <span class="legend-item">
+                    <i class="legend-marker legend-media"></i>
+                    ${_('MEDIANA DEL CURSO')}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="videos-accordion-wrapper" id="videos-accordion-container">
+        <!-- "grafico" tipo acordeon -->
+    </div>
+    
+    <div id="videos-recommendation" class="navigation-recommendation-wrapper">
+        <div class="navigation-recommendation-box">
+            <div class="recommendation-header">
+                💡 ${_('Recomendación')}
+            </div>
+            <div class="recommendation-content collapsed" id="rec-videos-content">
+                <div class="recommendation-text" id="rec-videos-text-content">
+                    <p style="margin-top: 0;">${_('El sistema registra que tanto el promedio del porcentaje visualizado de cada video como las interacciones que tienes con el reproductor (play, pausa, cambio de posición) se sitúan en torno a la mediana de tu curso. Este es un buen momento para darle a tu estudio un propósito más reflexivo.')}</p>
+                    
+                    <p>${_('Para dar un paso adelante en la consolidación de tus conocimientos, te sugerimos:')}</p>
+                    
+                    <ol style="margin-left: 1.5em; margin-bottom: 1em;">
+                        <li style="margin-bottom: 0.5em;">${_('Definir un propósito claro antes de iniciar la reproducción y reflexionar sobre qué afirmaciones puedes contrastar con lecturas o temas anteriores.')}</li>
+                        <li style="margin-bottom: 0.5em;">${_('Comparar los procedimientos expuestos en pantalla con otros ejercicios prácticos resueltos previamente.')}</li>
+                        <li style="margin-bottom: 0.5em;">${_('Compartir y debatir los apuntes y resúmenes extraídos del video con tus compañeros/as de estudio.')}</li>
+                    </ol>
+                    
+                    <p style="margin-bottom: 0;">${_('¿Qué conceptos de los últimos videos pudiste relacionar con las lecturas o con los ejercicios que habías trabajado anteriormente? Contrastar la información y compartir tus apuntes con otros te permitirá afianzar tu aprendizaje con mayor profundidad.')}</p>
+                </div>    
+            </div>
+            <button class="recommendation-toggle-btn" id="rec-videos-toggle-btn" onclick="toggleVideosRecommendationText()" style="display: none;">Ver más</button>
+        </div>
+    </div>
+</section>

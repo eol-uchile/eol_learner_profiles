@@ -1,0 +1,366 @@
+{
+    "agregaciones": {
+        "MEDIAN": {
+            "metrics_per_week": [
+                {
+                    "username": "MEDIAN",
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "week": 1,
+                    "week_time": "2023-03-13 00:00:00",
+                    "COMPLETITUD_POR_SEMANA": 0.1395719489981785,
+                    "TIEMPO_NAVEGACION_POR_SEMANA": 11440.0
+                }
+            ],
+            "metrics_per_structure": [
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "username": "MEDIAN",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@07f1eeb627d94f43aea6d1ff54f27efc",
+                    "chapter_location": 1,
+                    "sequential_location": 1.1,
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Inicio",
+                    "chapter_order": 1,
+                    "sequential_order": 1,
+                    "graded": false,
+                    "vertical_duration": 99.0,
+                    "visualization_time": 116.1006534675751,
+                    "TIEMPO_DE_EVALUACIONES (APLICAR FILTRO GRADED = TRUE). Si\nSí esta columna la agrups por chaptyer, te sale TIEMPO_NAVEGACION_POR_MODULO": 121.0
+                },
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "username": "MEDIAN",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@38d62484b09b44439aa7122e478b3d94",
+                    "chapter_location": 1,
+                    "sequential_location": 1.2,
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Conociendo a EOL",
+                    "chapter_order": 1,
+                    "sequential_order": 2,
+                    "graded": false,
+                    "vertical_duration": 45.625,
+                    "visualization_time": null,
+                    "TIEMPO_DE_EVALUACIONES (APLICAR FILTRO GRADED = TRUE). Si\nSí esta columna la agrups por chaptyer, te sale TIEMPO_NAVEGACION_POR_MODULO": null
+                },
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "username": "MEDIAN",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@86c6202b9ce74abc966e42a7bdd485dd",
+                    "chapter_location": 1,
+                    "sequential_location": 1.3,
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Cierre módulo inicio",
+                    "chapter_order": 1,
+                    "sequential_order": 3,
+                    "graded": false,
+                    "vertical_duration": 11.0,
+                    "visualization_time": null,
+                    "TIEMPO_DE_EVALUACIONES (APLICAR FILTRO GRADED = TRUE). Si\nSí esta columna la agrups por chaptyer, te sale TIEMPO_NAVEGACION_POR_MODULO": null
+                }
+            ],
+            "metrics_per_video": [
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@07f1eeb627d94f43aea6d1ff54f27efc",
+                    "vertical_id": "block-v1:eol+IN2201+2023_1+type@vertical+block@30856062de384c4b8a0a8ce51a38a6a3",
+                    "block_id": "block-v1:eol+IN2201+2023_1+type@video+block@49958c039f764d8d83a29a4eea5aca40",
+                    "username": "MEDIAN",
+                    "chapter_location": 1,
+                    "sequential_location": 1.1,
+                    "vertical_location": "1.1.2",
+                    "block_location": "1.1.2.1",
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Inicio",
+                    "vertical_name": "Video de bienvenida",
+                    "block_name": null,
+                    "chapter_order": 1,
+                    "sequential_order": 1,
+                    "vertical_order": 2,
+                    "block_order": 1,
+                    "pause_count": 1.0,
+                    "play_count": 1.0,
+                    "interaction_time": 121.0,
+                    "visualization_time": 105.9205513645782,
+                    "video_duration": 118,
+                    "visualization_percent": 0.8976317912252394
+                }
+            ]
+        },
+        "P_33": {
+            "metrics_per_week": [
+                {
+                    "username": "P_33",
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "week": 1,
+                    "week_time": "2023-03-13 00:00:00",
+                    "COMPLETITUD_POR_SEMANA": 0.1042805100182149,
+                    "TIEMPO_NAVEGACION_POR_SEMANA": 7392.48
+                }
+            ],
+            "metrics_per_structure": [
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "username": "P_33",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@07f1eeb627d94f43aea6d1ff54f27efc",
+                    "chapter_location": 1,
+                    "sequential_location": 1.1,
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Inicio",
+                    "chapter_order": 1,
+                    "sequential_order": 1,
+                    "graded": false,
+                    "vertical_duration": 63.16,
+                    "visualization_time": 52.7848684105716,
+                    "TIEMPO_DE_EVALUACIONES (APLICAR FILTRO GRADED = TRUE). Si\nSí esta columna la agrups por chaptyer, te sale TIEMPO_NAVEGACION_POR_MODULO": 98.71000000000001
+                },
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "username": "P_33",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@38d62484b09b44439aa7122e478b3d94",
+                    "chapter_location": 1,
+                    "sequential_location": 1.2,
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Conociendo a EOL",
+                    "chapter_order": 1,
+                    "sequential_order": 2,
+                    "graded": false,
+                    "vertical_duration": 31.95,
+                    "visualization_time": null,
+                    "TIEMPO_DE_EVALUACIONES (APLICAR FILTRO GRADED = TRUE). Si\nSí esta columna la agrups por chaptyer, te sale TIEMPO_NAVEGACION_POR_MODULO": null
+                },
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "username": "P_33",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@86c6202b9ce74abc966e42a7bdd485dd",
+                    "chapter_location": 1,
+                    "sequential_location": 1.3,
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Cierre módulo inicio",
+                    "chapter_order": 1,
+                    "sequential_order": 3,
+                    "graded": false,
+                    "vertical_duration": 7.5,
+                    "visualization_time": null,
+                    "TIEMPO_DE_EVALUACIONES (APLICAR FILTRO GRADED = TRUE). Si\nSí esta columna la agrups por chaptyer, te sale TIEMPO_NAVEGACION_POR_MODULO": null
+                }
+            ],
+            "metrics_per_video": [
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@07f1eeb627d94f43aea6d1ff54f27efc",
+                    "vertical_id": "block-v1:eol+IN2201+2023_1+type@vertical+block@30856062de384c4b8a0a8ce51a38a6a3",
+                    "block_id": "block-v1:eol+IN2201+2023_1+type@video+block@49958c039f764d8d83a29a4eea5aca40",
+                    "username": "P_33",
+                    "chapter_location": 1,
+                    "sequential_location": 1.1,
+                    "vertical_location": "1.1.2",
+                    "block_location": "1.1.2.1",
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Inicio",
+                    "vertical_name": "Video de bienvenida",
+                    "block_name": null,
+                    "chapter_order": 1,
+                    "sequential_order": 1,
+                    "vertical_order": 2,
+                    "block_order": 1,
+                    "pause_count": 1.0,
+                    "play_count": 1.0,
+                    "interaction_time": 89.0,
+                    "visualization_time": 61.52653232067446,
+                    "video_duration": 118,
+                    "visualization_percent": 0.5214112908531734
+                }
+            ]
+        },
+        "P_66": {
+            "metrics_per_week": [
+                {
+                    "username": "P_66",
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "week": 1,
+                    "week_time": "2023-03-13 00:00:00",
+                    "COMPLETITUD_POR_SEMANA": 0.1696630236794171,
+                    "TIEMPO_NAVEGACION_POR_SEMANA": 14649.44
+                }
+            ],
+            "metrics_per_structure": [
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "username": "P_66",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@07f1eeb627d94f43aea6d1ff54f27efc",
+                    "chapter_location": 1,
+                    "sequential_location": 1.1,
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Inicio",
+                    "chapter_order": 1,
+                    "sequential_order": 1,
+                    "graded": false,
+                    "vertical_duration": 128.5333333333334,
+                    "visualization_time": 116.9368358791949,
+                    "TIEMPO_DE_EVALUACIONES (APLICAR FILTRO GRADED = TRUE). Si\nSí esta columna la agrups por chaptyer, te sale TIEMPO_NAVEGACION_POR_MODULO": 127.0
+                },
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "username": "P_66",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@38d62484b09b44439aa7122e478b3d94",
+                    "chapter_location": 1,
+                    "sequential_location": 1.2,
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Conociendo a EOL",
+                    "chapter_order": 1,
+                    "sequential_order": 2,
+                    "graded": false,
+                    "vertical_duration": 76.64999999999998,
+                    "visualization_time": null,
+                    "TIEMPO_DE_EVALUACIONES (APLICAR FILTRO GRADED = TRUE). Si\nSí esta columna la agrups por chaptyer, te sale TIEMPO_NAVEGACION_POR_MODULO": null
+                },
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "username": "P_66",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@86c6202b9ce74abc966e42a7bdd485dd",
+                    "chapter_location": 1,
+                    "sequential_location": 1.3,
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Cierre módulo inicio",
+                    "chapter_order": 1,
+                    "sequential_order": 3,
+                    "graded": false,
+                    "vertical_duration": 17.0,
+                    "visualization_time": null,
+                    "TIEMPO_DE_EVALUACIONES (APLICAR FILTRO GRADED = TRUE). Si\nSí esta columna la agrups por chaptyer, te sale TIEMPO_NAVEGACION_POR_MODULO": null
+                }
+            ],
+            "metrics_per_video": [
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@07f1eeb627d94f43aea6d1ff54f27efc",
+                    "vertical_id": "block-v1:eol+IN2201+2023_1+type@vertical+block@30856062de384c4b8a0a8ce51a38a6a3",
+                    "block_id": "block-v1:eol+IN2201+2023_1+type@video+block@49958c039f764d8d83a29a4eea5aca40",
+                    "username": "P_66",
+                    "chapter_location": 1,
+                    "sequential_location": 1.1,
+                    "vertical_location": "1.1.2",
+                    "block_location": "1.1.2.1",
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Inicio",
+                    "vertical_name": "Video de bienvenida",
+                    "block_name": null,
+                    "chapter_order": 1,
+                    "sequential_order": 1,
+                    "vertical_order": 2,
+                    "block_order": 1,
+                    "pause_count": 1.0,
+                    "play_count": 2.0,
+                    "interaction_time": 126.0,
+                    "visualization_time": 116.9011689917252,
+                    "video_duration": 118,
+                    "visualization_percent": 0.9906878728112305
+                }
+            ]
+        }
+    },
+    "estudiantes": {
+        "f8174c67d76bf95b5dd8b4a7ca49f6e5eec52af3e88f6fa6659ec5ec985ff25a": {
+            "metrics_per_week": [
+                {
+                    "username": "f8174c67d76bf95b5dd8b4a7ca49f6e5eec52af3e88f6fa6659ec5ec985ff25a",
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "week": 1,
+                    "week_time": "2023-03-13 00:00:00",
+                    "COMPLETITUD_POR_SEMANA": 0.1848816029143898,
+                    "TIEMPO_NAVEGACION_POR_SEMANA": 7416.0
+                }
+            ],
+            "metrics_per_structure": [
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "username": "f8174c67d76bf95b5dd8b4a7ca49f6e5eec52af3e88f6fa6659ec5ec985ff25a",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@07f1eeb627d94f43aea6d1ff54f27efc",
+                    "chapter_location": 1,
+                    "sequential_location": 1.1,
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Inicio",
+                    "chapter_order": 1,
+                    "sequential_order": 1,
+                    "graded": false,
+                    "vertical_duration": 27.0,
+                    "visualization_time": 104.9879776681213,
+                    "TIEMPO_DE_EVALUACIONES (APLICAR FILTRO GRADED = TRUE). Si\nSí esta columna la agrups por chaptyer, te sale TIEMPO_NAVEGACION_POR_MODULO": 61.0
+                },
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "username": "f8174c67d76bf95b5dd8b4a7ca49f6e5eec52af3e88f6fa6659ec5ec985ff25a",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@38d62484b09b44439aa7122e478b3d94",
+                    "chapter_location": 1,
+                    "sequential_location": 1.2,
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Conociendo a EOL",
+                    "chapter_order": 1,
+                    "sequential_order": 2,
+                    "graded": false,
+                    "vertical_duration": 6.75,
+                    "visualization_time": null,
+                    "TIEMPO_DE_EVALUACIONES (APLICAR FILTRO GRADED = TRUE). Si\nSí esta columna la agrups por chaptyer, te sale TIEMPO_NAVEGACION_POR_MODULO": null
+                },
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "username": "f8174c67d76bf95b5dd8b4a7ca49f6e5eec52af3e88f6fa6659ec5ec985ff25a",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@86c6202b9ce74abc966e42a7bdd485dd",
+                    "chapter_location": 1,
+                    "sequential_location": 1.3,
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Cierre módulo inicio",
+                    "chapter_order": 1,
+                    "sequential_order": 3,
+                    "graded": false,
+                    "vertical_duration": 4.0,
+                    "visualization_time": null,
+                    "TIEMPO_DE_EVALUACIONES (APLICAR FILTRO GRADED = TRUE). Si\nSí esta columna la agrups por chaptyer, te sale TIEMPO_NAVEGACION_POR_MODULO": null
+                }
+            ],
+            "metrics_per_video": [
+                {
+                    "course_id": "course-v1:eol+IN2201+2023_1",
+                    "chapter_id": "block-v1:eol+IN2201+2023_1+type@chapter+block@95914db8ceef434a9bcc770a702cedbe",
+                    "sequential_id": "block-v1:eol+IN2201+2023_1+type@sequential+block@07f1eeb627d94f43aea6d1ff54f27efc",
+                    "vertical_id": "block-v1:eol+IN2201+2023_1+type@vertical+block@30856062de384c4b8a0a8ce51a38a6a3",
+                    "block_id": "block-v1:eol+IN2201+2023_1+type@video+block@49958c039f764d8d83a29a4eea5aca40",
+                    "username": "f8174c67d76bf95b5dd8b4a7ca49f6e5eec52af3e88f6fa6659ec5ec985ff25a",
+                    "chapter_location": 1,
+                    "sequential_location": 1.1,
+                    "vertical_location": "1.1.2",
+                    "block_location": "1.1.2.1",
+                    "chapter_name": "Módulo inicio",
+                    "sequential_name": "Inicio",
+                    "vertical_name": "Video de bienvenida",
+                    "block_name": null,
+                    "chapter_order": 1,
+                    "sequential_order": 1,
+                    "vertical_order": 2,
+                    "block_order": 1,
+                    "pause_count": 0.0,
+                    "play_count": 1.0,
+                    "interaction_time": 61.0,
+                    "visualization_time": 104.9879776681213,
+                    "video_duration": 118,
+                    "visualization_percent": 0.8897286243061128
+                }
+            ]
+        }
+    }
+}

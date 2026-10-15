@@ -1,0 +1,634 @@
+<script>
+(function () {
+    'use strict';
+
+    var globalD3 = null;
+    var currentCompletitudView = 'chapter';
+    var currentNavigationView = 'chapter';
+    var currentEvaluacionesView = 'calificaciones';
+    var currentVideoView = 'porcentaje';
+
+    // ==========================================
+    // 1. Procesamiento json
+    // ==========================================
+    var userNavWeek = typeof navigationWeek !== 'undefined' ? navigationWeek : [];
+    var userNavChapter = typeof navigationChapter !== 'undefined' ? navigationChapter : [];
+    var userVideos = typeof videosData !== 'undefined' ? videosData : [];
+    var sysAgregaciones = typeof agregacionesData !== 'undefined' ? agregacionesData : { MEDIAN: {} };
+    var dataCalificaciones = (typeof evaluacionesData !== 'undefined' && evaluacionesData) ? evaluacionesData : [];
+    dataCalificaciones.forEach(function(d) {
+        d.score_median = Math.floor(Math.random() * 101); 
+    });
+
+    var medianNavWeek = sysAgregaciones.MEDIAN?.metrics_per_week || [];
+    var medianNavChapter = sysAgregaciones.MEDIAN?.metrics_per_structure || [];
+    var medianVideos = sysAgregaciones.MEDIAN?.metrics_per_video || [];
+
+    var DATA_COMPLETITUD = { week: [], chapter: [] };
+    var DATA_NAVEGACION = { week: [], chapter: [] };
+    var DATA_VIDEOS = [];
+
+    // --- 1.1 Semanas ---
+    function getMedianWeek(weekNum, key) {
+        var found = medianNavWeek.find(function(m) { return m.week === weekNum; });
+        return found ? (parseFloat(found[key]) || 0) : 0;
+    }
+
+    userNavWeek.forEach(function(d) {
+        var compMed = getMedianWeek(d.week, 'COMPLETITUD_POR_SEMANA');
+        var navMed = getMedianWeek(d.week, 'TIEMPO_NAVEGACION_POR_SEMANA');
+
+        DATA_COMPLETITUD.week.push({
+            week: d.week,
+            date_label: 'Semana ' + d.week,
+            individual_time: (parseFloat(d.COMPLETITUD_POR_SEMANA) || 0) * 100, // 0.18 a 18%
+            average_time: compMed * 100
+        });
+
+        DATA_NAVEGACION.week.push({
+            week: d.week,
+            date_label: 'Semana ' + d.week,
+            individual_time: (parseFloat(d.TIEMPO_NAVEGACION_POR_SEMANA) || 0) / 60, // Segundos a Minutos
+            average_time: navMed / 60
+        });
+    });
+
+    // --- 1.2 Capítulos (Módulos) ---
+    function aggregateChapters(dataArr) {
+        var groups = {};
+        dataArr.forEach(function(d) {
+            if (!d.chapter_name) return;
+            var cName = d.chapter_name;
+            if (!groups[cName]) {
+                groups[cName] = { name: cName, vis_time: 0, dur_time: 0, order: d.chapter_order || 99 };
+            }
+            groups[cName].vis_time += parseFloat(d.visualization_time) || 0;
+            groups[cName].dur_time += parseFloat(d.vertical_duration) || 0;
+        });
+        return Object.values(groups).sort(function(a, b) { return a.order - b.order; });
+    }
+
+    var aggUserChapter = aggregateChapters(userNavChapter);
+    var aggMedianChapter = aggregateChapters(medianNavChapter);
+
+    aggUserChapter.forEach(function(uCh) {
+        var mCh = aggMedianChapter.find(function(m) { return m.name === uCh.name; }) || { vis_time: 0, dur_time: 1 };
+        
+        var compUser = uCh.dur_time > 0 ? (uCh.vis_time / uCh.dur_time) * 100 : 0;
+        var compMed = mCh.dur_time > 0 ? (mCh.vis_time / mCh.dur_time) * 100 : 0;
+        
+        DATA_COMPLETITUD.chapter.push({
+            name: uCh.name,
+            individual_time: Math.min(compUser, 100),
+            average_time: Math.min(compMed, 100)
+        });
+
+        DATA_NAVEGACION.chapter.push({
+            name: uCh.name,
+            individual_time: uCh.vis_time / 60,
+            average_time: mCh.vis_time / 60
+        });
+    });
+
+    // --- 1.3 Videos ---
+    var videoGroups = {};
+    userVideos.forEach(function(v) {
+        var cName = v.chapter_name || "Otros Videos";
+        if (!videoGroups[cName]) {
+            videoGroups[cName] = {
+                title: cName, progress_user: 0, progress_median: 0,
+                time_user: 0, time_median: 0, time_total: 0,
+                videos_count: 0, items: [], order: v.chapter_order || 99
+            };
+        }
+        
+        var vMed = medianVideos.find(function(mv) { return mv.vertical_name === v.vertical_name && mv.chapter_name === v.chapter_name; }) || {};
+
+        var userTime = (parseFloat(v.visualization_time) || 0) / 60; // a Minutos
+        var medTime = (parseFloat(vMed.visualization_time) || 0) / 60;
+        var totalTime = (parseFloat(v.video_duration) || 120) / 60;
+
+        var vItem = {
+            title: (v.vertical_name || "Video") + (v.block_name ? " - " + v.block_name : ""),
+            progress_user: (parseFloat(v.visualization_percent) || 0) * 100,
+            progress_median: (parseFloat(vMed.visualization_percent) || 0) * 100,
+            inter_user: parseFloat(v.play_count || 0) + parseFloat(v.pause_count || 0),
+            inter_median: parseFloat(vMed.play_count || 0) + parseFloat(vMed.pause_count || 0),
+            time_user: userTime,
+            time_median: medTime,
+            time_total: totalTime
+        };
+        videoGroups[cName].items.push(vItem);
+        videoGroups[cName].videos_count++;
+        videoGroups[cName].time_user += userTime;
+        videoGroups[cName].time_median += medTime;
+        videoGroups[cName].time_total += totalTime;
+    });
+
+    Object.values(videoGroups).forEach(function(g) {
+        if(g.videos_count > 0) {
+            var sumUserProg = 0, sumMedProg = 0;
+            g.items.forEach(function(i) { sumUserProg += i.progress_user; sumMedProg += i.progress_median; });
+            g.progress_user = sumUserProg / g.videos_count;
+            g.progress_median = sumMedProg / g.videos_count;
+        }
+        DATA_VIDEOS.push(g);
+    });
+    DATA_VIDEOS.sort(function(a,b) { return a.order - b.order; });
+
+    // --- 1.4. Evaluaciones de Tiempo  ---
+    var DATA_EVALUACIONES_TIEMPO = [];
+    var sysP33Chapter = sysAgregaciones.P_33?.metrics_per_structure || [];
+    var sysP66Chapter = sysAgregaciones.P_66?.metrics_per_structure || [];
+
+    var evaluacionesUsuario = userNavChapter.filter(function(d) { return d.graded === true || d.graded === 'True'; });
+
+    evaluacionesUsuario.forEach(function(ev, index) {
+        var name = ev.sequential_name || 'Evaluación ' + (index + 1);
+        
+        var mEv = medianNavChapter.find(function(m) { return m.sequential_name === name; }) || {};
+        var p33Ev = sysP33Chapter.find(function(m) { return m.sequential_name === name; }) || {};
+        var p66Ev = sysP66Chapter.find(function(m) { return m.sequential_name === name; }) || {};
+
+        var tUser = (parseFloat(ev.visualization_time) || 0) / 60;
+        var tMed = (parseFloat(mEv.visualization_time) || 0) / 60;
+        var tQ1 = (parseFloat(p33Ev.visualization_time) || 0) / 60;
+        var tQ3 = (parseFloat(p66Ev.visualization_time) || 0) / 60;
+
+        if(!tMed && tUser) tMed = tUser;
+        if(!tQ1) tQ1 = tMed * 0.7;
+        if(!tQ3) tQ3 = tMed * 1.3;
+
+        DATA_EVALUACIONES_TIEMPO.push({
+            name: name,
+            short_label: 'E' + (index + 1),
+            time_user: tUser,
+            median: tMed,
+            q1: tQ1,
+            q3: tQ3,
+            min: tQ1 * 0.5, // Límite inferior del bigote
+            max: tQ3 * 1.5  // Límite superior del bigote
+        });
+    });
+
+
+    // ==========================================
+    // 2. Tooltips & Recomendaciones
+    // ==========================================
+    var globalTooltipEl = null;
+    function getTooltip() {
+        if (!globalTooltipEl) {
+            globalTooltipEl = document.createElement('div');
+            globalTooltipEl.className = 'd3-tooltip';
+            document.body.appendChild(globalTooltipEl);
+        }
+        return globalTooltipEl;
+    }
+    
+    function showTooltip(e, html) {
+        var t = getTooltip();
+        t.innerHTML = html;
+        t.style.opacity = 1;
+        moveTooltip(e);
+    }
+    
+    function moveTooltip(e) {
+        var pageX = e.pageX || (e.touches && e.touches[0].pageX) || 0;
+        var pageY = e.pageY || (e.touches && e.touches[0].pageY) || 0;
+        var t = getTooltip();
+        t.style.left = (pageX > window.innerWidth - 150 ? pageX - 120 : pageX + 15) + 'px';
+        t.style.top = (pageY - 30) + 'px';
+    }
+    
+    function hideTooltip() { if(globalTooltipEl) globalTooltipEl.style.opacity = 0; }
+
+    function applyRecommendationCollapse(contentId, btnId) {
+        var content = document.getElementById(contentId);
+        var btn = document.getElementById(btnId);
+        if (!content || !btn) return;
+        var text = content.textContent.trim();
+        
+        if (text.length > 90 && text !== 'Cargando recomendación...') {
+            content.classList.add('collapsed');
+            content.style.maxHeight = '26px';
+            btn.style.display = 'inline-block';
+            btn.textContent = 'Ver más';
+        } else {
+            content.classList.remove('collapsed');
+            content.style.maxHeight = 'none';
+            btn.style.display = 'none';
+        }
+    }
+
+    function toggleRec(contentId, btnId) {
+        var content = document.getElementById(contentId);
+        var btn = document.getElementById(btnId);
+        if (!content || !btn) return;
+        var isCollapsed = content.classList.contains('collapsed');
+        content.classList.toggle('collapsed');
+        content.style.maxHeight = isCollapsed ? content.scrollHeight + 'px' : '26px';
+        btn.textContent = isCollapsed ? 'Ver menos' : 'Ver más';
+    }
+
+    window.toggleRecommendationText = function() { toggleRec('rec-content', 'rec-toggle-btn'); };
+    window.toggleVideosRecommendationText = function() { toggleRec('rec-videos-content', 'rec-videos-toggle-btn'); };
+    window.toggleEvalRecommendationText = function() { toggleRec('rec-eval-content', 'rec-eval-toggle-btn'); };
+
+
+    // ==========================================
+    // 3. Inicializacion
+    // ==========================================
+    import('https://cdn.jsdelivr.net/npm/d3@7/+esm').then(function (d3Module) {
+        globalD3 = d3Module;
+        renderChart(globalD3, 'completitud', currentCompletitudView);
+        renderChart(globalD3, 'navigation', currentNavigationView);
+        renderEvaluacionesChart(globalD3, currentEvaluacionesView);
+        renderVideosChart();
+        setupToggles(globalD3);
+    }).catch(function (error) {
+        console.error('No se pudo cargar D3:', error);
+    });
+
+    function getXLabel(d, view) {
+        if (view === 'week') return d.date_label || ('Semana ' + d.week);
+        var match = d.name.match(/^Módulo (\d+)/i);
+        return match ? ('Mód. ' + match[1]) : d.name;
+    }
+
+    function formatTime(minutes) {
+        if (!minutes) return '0 min';
+        minutes = Math.round(minutes);
+        var hours = Math.floor(minutes / 60);
+        var remainingMinutes = minutes % 60;
+        if (hours > 0) return remainingMinutes === 0 ? hours + 'h' : hours + 'h ' + remainingMinutes + 'min';
+        return minutes + ' min';
+    }
+
+
+    // ==========================================
+    // 4. Graficos: Completitud y Navegacion
+    // ==========================================
+    function renderChart(d3, chartType, view) {
+        var containerId = chartType === 'completitud' ? 'completitud-chart' : 'navigation-chart';
+        var container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+
+        var data = chartType === 'completitud' ? DATA_COMPLETITUD[view] : DATA_NAVEGACION[view];
+        if(!data || data.length === 0) {
+            container.innerHTML = '<p style="padding:20px; color:#666;">No hay datos disponibles para esta vista.</p>';
+            return;
+        }
+
+        var margin = { top: 20, right: 20, bottom: view === 'chapter' ? 80 : 60, left: 60 };
+        var height = 200;
+        
+        var parentWidth = container.parentElement.clientWidth || 800;
+        var idealMinWidth = (view === 'chapter') ? data.length * 60 : data.length * 80;
+        var containerWidth = Math.max(parentWidth, idealMinWidth);
+        var width = containerWidth - margin.left - margin.right;
+
+        var svg = d3.select('#' + containerId).append('svg')
+            .attr('width', containerWidth)
+            .attr('height', height + margin.top + margin.bottom);
+
+        var chart = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+        var labels = data.map(function (d) { return getXLabel(d, view); });
+        var x = d3.scaleBand().domain(labels).range([0, width]).padding(0.2);
+
+        var isCompletitud = chartType === 'completitud';
+        // Para tiempo (minutos), dividimos por 60 en el eje Y para mostrar Horas
+        var maxValue = isCompletitud ? 100 : d3.max(data, function(d) { return Math.max(d.individual_time, d.average_time) / 60; }) * 1.15;
+        if (!maxValue || maxValue === 0) maxValue = isCompletitud ? 100 : 1; 
+
+        var yAxisLabel = isCompletitud ? 'AVANCE (%)' : 'TIEMPO (H)';
+        var colorBarra = isCompletitud ? 'completitud-bar' : 'navigation-bar';
+        var lineColor = isCompletitud ? '#00a676' : '#087db2';
+        
+        var y = d3.scaleLinear().domain([0, maxValue]).nice().range([height, 0]);
+
+        chart.append('g').attr('class', 'grid')
+            .call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat(''))
+            .selectAll('line').style('stroke', '#eef2f5').style('stroke-opacity', '0.7');
+        chart.selectAll('.grid path').style('stroke-width', '0');
+
+        chart.append('g').attr('class', 'chart-axis')
+            .call(d3.axisLeft(y).ticks(5).tickFormat(function (d) { return isCompletitud ? d : d.toFixed(1); }));
+
+        var xAxis = chart.append('g').attr('class', 'chart-axis')
+            .attr('transform', 'translate(0,' + height + ')')
+            .call(d3.axisBottom(x).tickFormat(function(label) {
+                // Mantiene el texto horizontal y lo recorta con (...) si supera los 11 caracteres
+                return label.length > 11 ? label.substring(0, 9) + '...' : label;
+            }));
+
+        chart.append('text').attr('transform', 'rotate(-90)').attr('y', -margin.left + 15).attr('x', -height / 2)
+            .attr('dy', '1em').style('text-anchor', 'middle').style('font-size', '11px').style('fill', '#666').text(yAxisLabel);
+
+        function getTooltipHtml(d) {
+            var label = view === 'week' ? (d.date_label || 'Semana ' + d.week) : d.name;
+            var valTu = isCompletitud ? d.individual_time.toFixed(1) + '%' : formatTime(d.individual_time);
+            var valMedia = isCompletitud ? d.average_time.toFixed(1) + '%' : formatTime(d.average_time);
+            return '<strong>' + label + '</strong><br>Tú: ' + valTu + '<br>Mediana del curso: ' + valMedia;
+        }
+
+        if (view === 'week') {
+            var lineTu = d3.line().x(function (d) { return x(getXLabel(d, view)) + x.bandwidth() / 2; })
+                .y(function (d) { return isCompletitud ? y(d.individual_time) : y(d.individual_time / 60); });
+
+            var lineMedia = d3.line().x(function (d) { return x(getXLabel(d, view)) + x.bandwidth() / 2; })
+                .y(function (d) { return isCompletitud ? y(d.average_time) : y(d.average_time / 60); });
+
+            if (isCompletitud) {
+                var areaMediana = d3.area().x(function (d) { return x(getXLabel(d, view)) + x.bandwidth() / 2; }).y0(height).y1(function (d) { return y(d.average_time); });
+                var areaTu = d3.area().x(function (d) { return x(getXLabel(d, view)) + x.bandwidth() / 2; }).y0(height).y1(function (d) { return y(d.individual_time); });
+
+                chart.append('path').datum(data).attr('fill', '#5d5d5d').attr('fill-opacity', 0.15).attr('d', areaMediana).style('pointer-events', 'none');
+                chart.append('path').datum(data).attr('fill', lineColor).attr('fill-opacity', 0.15).attr('d', areaTu).style('pointer-events', 'none');
+            }
+
+            chart.append('path').datum(data).attr('fill', 'none').attr('stroke', '#5d5d5d').attr('stroke-width', 2).attr('stroke-dasharray', '5,5').attr('d', lineMedia);
+            chart.append('path').datum(data).attr('fill', 'none').attr('stroke', lineColor).attr('stroke-width', 3).attr('d', lineTu);
+
+            chart.selectAll('.dot-punto').data(data).enter().append('circle')
+                .attr('cx', function (d) { return x(getXLabel(d, view)) + x.bandwidth() / 2; })
+                .attr('cy', function (d) { return isCompletitud ? y(d.individual_time) : y(d.individual_time / 60); })
+                .attr('r', 6).attr('fill', lineColor).style('cursor', 'pointer')
+                .on('mouseover touchstart', function(e, d) { showTooltip(e, getTooltipHtml(d)); })
+                .on('mousemove touchmove', moveTooltip)
+                .on('mouseout touchend', hideTooltip);
+        } else {
+            chart.selectAll('.' + colorBarra).data(data).enter().append('rect')
+                .attr('class', colorBarra)
+                .attr('x', function (d) { return x(getXLabel(d, view)); })
+                .attr('y', function (d) { return isCompletitud ? y(d.individual_time) : y(d.individual_time / 60); })
+                .attr('width', x.bandwidth())
+                .attr('height', function (d) { return height - (isCompletitud ? y(d.individual_time) : y(d.individual_time / 60)); })
+                .attr('rx', 1).style('cursor', 'pointer')
+                .on('mouseover touchstart', function(e, d) { showTooltip(e, getTooltipHtml(d)); })
+                .on('mousemove touchmove', moveTooltip)
+                .on('mouseout touchend', hideTooltip);
+
+            chart.selectAll('.chart-average').data(data).enter().append('rect')
+                .attr('class', 'chart-average')
+                .attr('x', function (d) { return x(getXLabel(d, view)) - 2; })
+                .attr('y', function (d) { return (isCompletitud ? y(d.average_time) : y(d.average_time / 60)) - 3; })
+                .attr('width', x.bandwidth() + 4).attr('height', 6).attr('rx', 2).style('pointer-events', 'none');
+        }
+
+        // var recElement = document.getElementById('rec-text-content');
+        // if (recElement) {
+        //     var firstName = (typeof userNameActual !== 'undefined' && userNameActual) ? userNameActual.split(' ')[0] : 'Estudiante';
+        //     recElement.textContent = '¡Hola, ' + firstName + '! El sistema ha analizado tus registros recientes y ya estamos mostrando tu progreso en base a los datos reales del curso.';
+        //     applyRecommendationCollapse('rec-content', 'rec-toggle-btn');
+        // }
+
+        applyRecommendationCollapse('rec-content', 'rec-toggle-btn');
+    }
+
+
+    // ==========================================
+    // 5. Grafico: Visualizacion de Videos
+    // ==========================================
+    function renderVideosChart() {
+        var container = document.getElementById('videos-accordion-container');
+        if (!container) return;
+
+        if(!DATA_VIDEOS || DATA_VIDEOS.length === 0) {
+            container.innerHTML = '<p style="padding:20px; color:#666;">No hay datos de video para mostrar.</p>';
+            return;
+        }
+
+        var htmlString = '';
+        var chevronSvg = '<svg class="chevron-icon" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>';
+
+        DATA_VIDEOS.forEach(function(modulo, index) {
+            var isOpen = index === 0 ? 'open' : '';
+            
+            var valUser = Math.min(Math.max(modulo.progress_user || 0, 0), 100);
+            var valMedia = Math.min(Math.max(modulo.progress_median || 0, 0), 100);
+            
+            var labelLeft = '0%';
+            var labelRight = '100%';
+
+            var timeUserStr = formatTime(modulo.time_user * 60);
+            var timeMedStr = formatTime(modulo.time_median * 60);
+
+            htmlString += '<details class="video-module-details" ' + isOpen + '>';
+            htmlString += '<summary class="video-module-summary">' + chevronSvg;
+            htmlString += '<div class="video-title">' + modulo.title + '</div>';
+            htmlString += '<div class="video-bar-wrapper">';
+            
+            var tooltipAttr = 'data-name="' + modulo.title + '" ' +
+                              'data-tu="' + Math.round(valUser) + '%" ' +
+                              'data-media="' + Math.round(valMedia) + '%" ' +
+                              'data-inter-user="' + Math.round(modulo.inter_user || 0) + '" ' +
+                              'data-inter-media="' + Math.round(modulo.inter_median || 0) + '" ' +
+                              'data-tiempo-user="' + timeUserStr + '" ' +
+                              'data-tiempo-media="' + timeMedStr + '"';
+
+            htmlString += '  <div class="video-bar-bg tooltip-target" ' + tooltipAttr + '>';
+            htmlString += '    <div class="video-bar-fill" style="width: ' + valUser + '%;"></div>';
+            htmlString += '    <div class="video-median-marker" style="left: ' + valMedia + '%;"></div>';
+            htmlString += '  </div>';
+            htmlString += '  <div class="video-bar-labels"><span>' + labelLeft + '</span><span>' + labelRight + '</span></div>';
+            htmlString += '</div><div class="video-meta">(' + modulo.videos_count + ' videos)</div></summary>';
+            
+            if (modulo.items && modulo.items.length > 0) {
+                htmlString += '<div class="video-items-list">';
+                modulo.items.forEach(function(video) {
+                    var vUser = Math.min(Math.max(video.progress_user || 0, 0), 100);
+                    var vMedia = Math.min(Math.max(video.progress_median || 0, 0), 100);
+                    
+                    var vTimeUserStr = formatTime((video.time_user || 0) * 60);
+                    var vTimeMedStr = formatTime((video.time_median || 0) * 60);
+
+                    var vTooltipAttr = 'data-name="' + video.title + '" ' +
+                                       'data-tu="' + Math.round(vUser) + '%" ' +
+                                       'data-media="' + Math.round(vMedia) + '%" ' +
+                                       'data-inter-user="' + Math.round(video.inter_user || 0) + '" ' +
+                                       'data-inter-media="' + Math.round(video.inter_median || 0) + '" ' +
+                                       'data-tiempo-user="' + vTimeUserStr + '" ' +
+                                       'data-tiempo-media="' + vTimeMedStr + '"';
+
+                    htmlString += '<div class="video-item-row"><div class="video-title">' + video.title + '</div>';
+                    htmlString += '  <div class="video-bar-wrapper">';
+                    htmlString += '    <div class="video-bar-bg tooltip-target" ' + vTooltipAttr + '>';
+                    htmlString += '      <div class="video-bar-fill" style="width: ' + vUser + '%;"></div>';
+                    htmlString += '      <div class="video-median-marker" style="left: ' + vMedia + '%;"></div>';
+                    htmlString += '    </div><div class="video-bar-labels"><span>0%</span><span>100%</span></div>';
+                    htmlString += '  </div></div>';
+                });
+                htmlString += '</div>';
+            }
+            htmlString += '</details>';
+        });
+
+        container.innerHTML = htmlString;
+        
+        document.querySelectorAll('#videos-accordion-container .tooltip-target').forEach(function(target) {
+            function handleHover(e) {
+                var name = target.getAttribute('data-name');
+                var tuPct = target.getAttribute('data-tu');
+                var medPct = target.getAttribute('data-media');
+                var interUser = target.getAttribute('data-inter-user');
+                var interMed = target.getAttribute('data-inter-media');
+                var tiempoUser = target.getAttribute('data-tiempo-user');
+                var tiempoMed = target.getAttribute('data-tiempo-media');
+
+                var html = '<strong>' + name + '</strong><br>' +
+                           '📊 Avance: Tú: ' + tuPct + ' | Mediana: ' + medPct + '<br>' +
+                           '🖱️ Interacciones: ' + interUser + ' | Mediana: ' + interMed + '<br>' +
+                           '⏱️ Tiempo visualizado: ' + tiempoUser + ' | Mediana: ' + tiempoMed;
+                showTooltip(e, html);
+            }
+            target.addEventListener('mouseover', handleHover);
+            target.addEventListener('touchstart', function(e) { handleHover(e.touches[0]); });
+            target.addEventListener('mousemove', moveTooltip);
+            target.addEventListener('touchmove', function(e) { moveTooltip(e.touches[0]); });
+            target.addEventListener('mouseout', hideTooltip);
+            target.addEventListener('touchend', hideTooltip);
+        });
+
+        applyRecommendationCollapse('rec-videos-content', 'rec-videos-toggle-btn');
+    }
+
+    window.setVideoViewMode = function(mode) {
+    };
+
+
+    // ==========================================
+    // 6. Grafico: Evaluaciones
+    // ==========================================
+    function renderEvaluacionesChart(d3, view) {
+        var container = document.getElementById('evaluaciones-chart');
+        if (!container) return;
+        container.innerHTML = '';
+
+        if (view === 'calificaciones' && !dataCalificaciones.length) {
+            container.innerHTML = '<p style="padding:20px; color:#666;">No hay evaluaciones disponibles aún.</p>';
+            return;
+        }
+
+        var activeData = view === 'calificaciones' ? dataCalificaciones : DATA_EVALUACIONES_TIEMPO;
+
+        if (view === 'calificaciones') {
+            var contadoresTipo = {};
+            activeData.forEach(function(d) {
+                var letra = d.eval_type ? d.eval_type.charAt(0).toUpperCase() : 'E';
+                if (!contadoresTipo[letra]) contadoresTipo[letra] = 0;
+                contadoresTipo[letra]++;
+                d.short_label = letra + contadoresTipo[letra]; 
+            });
+        }
+
+        var margin = { top: 20, right: 20, bottom: 80, left: 60 }; 
+        var height = 220; 
+        var totalSvgHeight = height + margin.top + margin.bottom;
+        
+        var parentWidth = container.parentElement.clientWidth || 800;
+        var idealMinWidth = activeData.length * 70;
+        var width = Math.max(parentWidth, idealMinWidth) - margin.left - margin.right;
+        
+        container.style.overflowX = 'auto';
+        container.style.overflowY = 'hidden';
+        container.style.height = totalSvgHeight + 'px';
+        
+        var parentWrap = container.closest('.chart-scroll-wrap');
+        if (parentWrap) parentWrap.style.height = 'auto';
+
+        var svg = d3.select('#evaluaciones-chart').append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', totalSvgHeight)
+            .style('width', (width + margin.left + margin.right) + 'px')
+            .style('height', totalSvgHeight + 'px');
+
+        var chart = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+        var x = d3.scaleBand().domain(activeData.map(function (d, i) { return i; })).range([0, width]).padding(0.3);
+        
+        var maxValue = view === 'tiempo' ? d3.max(activeData, function(d) { return Math.max(d.max || 0, d.time_user || 0); }) * 1.1 : 100;
+        if (!maxValue || maxValue === 0) maxValue = view === 'tiempo' ? 10 : 100;
+        
+        var yAxisLabel = view === 'tiempo' ? 'TIEMPO (MIN)' : 'CALIFICACIÓN (%)';
+        var y = d3.scaleLinear().domain([0, maxValue]).nice().range([height, 0]);
+
+        chart.append('g').attr('class', 'grid').call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat('')).selectAll('line').style('stroke', '#eef2f5').style('stroke-opacity', '0.7');
+        chart.selectAll('.grid path').style('stroke-width', '0');
+        chart.append('g').attr('class', 'chart-axis').call(d3.axisLeft(y).ticks(5));
+        chart.append('g').attr('class', 'chart-axis').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(x).tickFormat(function (i) { return activeData[i].short_label; }));
+        chart.append('text').attr('transform', 'rotate(-90)').attr('y', -margin.left + 15).attr('x', -height / 2).attr('dy', '1em').style('text-anchor', 'middle').style('font-size', '11px').style('fill', '#666').text(yAxisLabel);
+
+        function getEvalTooltipHtml(d) {
+            var label = view === 'calificaciones' ? ((d.eval_type ? d.eval_type + ': ' : '') + d.name) : d.name;
+            var valTu = view === 'calificaciones' ? d.score_user + '%' : d.time_user.toFixed(1) + ' min';
+            var valMedia = view === 'calificaciones' ? d.score_median + '%' : d.median.toFixed(1) + ' min';
+            return '<strong>' + label + '</strong><br>Tú: ' + valTu + '<br>Mediana del curso: ' + valMedia;
+        }
+
+        if (view === 'calificaciones') {
+            chart.selectAll('.evaluaciones-bar').data(activeData).enter().append('rect')
+                .attr('class', 'evaluaciones-bar').attr('x', function (d, i) { return x(i); })
+                .attr('y', function (d) { return y(d.score_user); })
+                .attr('width', x.bandwidth()).attr('height', function (d) { return height - y(d.score_user); }).attr('rx', 1).style('cursor', 'pointer')
+                .on('mouseover touchstart', function(e, d) { showTooltip(e, getEvalTooltipHtml(d)); })
+                .on('mousemove touchmove', moveTooltip)
+                .on('mouseout touchend', hideTooltip);
+
+            chart.selectAll('.chart-average').data(activeData).enter().append('rect')
+                .attr('class', 'chart-average').attr('x', function (d, i) { return x(i) - 2; }).attr('y', function (d) { return y(d.score_median) - 3; })
+                .attr('width', x.bandwidth() + 4).attr('height', 6).attr('rx', 2).style('pointer-events', 'none').attr('fill', '#5d5d5d');
+                
+        } else {
+            var boxGroup = chart.selectAll('.box-group').data(activeData).enter().append('g').attr('class', 'box-group').style('cursor', 'pointer')
+                .on('mouseover touchstart', function(e, d) { showTooltip(e, getEvalTooltipHtml(d)); })
+                .on('mousemove touchmove', moveTooltip)
+                .on('mouseout touchend', hideTooltip);
+
+            boxGroup.append('line').attr('x1', function(d, i) { return x(i) + x.bandwidth() / 2; }).attr('x2', function(d, i) { return x(i) + x.bandwidth() / 2; }).attr('y1', function(d) { return y(d.min); }).attr('y2', function(d) { return y(d.q1); }).attr('stroke', '#7a7a7a').attr('stroke-width', 4);
+            boxGroup.append('line').attr('x1', function(d, i) { return x(i) + x.bandwidth() / 2; }).attr('x2', function(d, i) { return x(i) + x.bandwidth() / 2; }).attr('y1', function(d) { return y(d.q3); }).attr('y2', function(d) { return y(d.max); }).attr('stroke', '#d9d9d9').attr('stroke-width', 4);
+            boxGroup.append('rect').attr('x', function (d, i) { return x(i); }).attr('y', function (d) { return y(d.median); }).attr('width', x.bandwidth()).attr('height', function (d) { return y(d.q1) - y(d.median); }).attr('fill', '#7a7a7a');
+            boxGroup.append('rect').attr('x', function (d, i) { return x(i); }).attr('y', function (d) { return y(d.q3); }).attr('width', x.bandwidth()).attr('height', function (d) { return y(d.median) - y(d.q3); }).attr('fill', '#d9d9d9');
+            boxGroup.append('rect').attr('x', function (d, i) { return x(i); }).attr('y', function (d) { return y(d.time_user) - 3; }).attr('width', x.bandwidth()).attr('height', 6).attr('rx', 2).attr('fill', '#c67b9c');
+        }
+        applyRecommendationCollapse('rec-eval-content', 'rec-eval-toggle-btn');
+    }
+
+    // ==========================================
+    // 7. Otros eventos
+    // ==========================================
+    function setupToggles(d3) {
+        var buttons = document.querySelectorAll('.chart-toggle .toggle-btn:not(#btn-view-porcentaje):not(#btn-view-tiempo)');
+        buttons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                var view = button.getAttribute('data-view');
+                var target = button.getAttribute('data-target');
+                
+                if (target === 'completitud') currentCompletitudView = view;
+                else if (target === 'navigation') currentNavigationView = view;
+                else if (target === 'evaluaciones') currentEvaluacionesView = view;
+                
+                var groupButtons = document.querySelectorAll('.view-toggle-' + target + ' .toggle-btn');
+                groupButtons.forEach(function (btn) { btn.classList.remove('active'); });
+                button.classList.add('active');
+                
+                if (target === 'evaluaciones') renderEvaluacionesChart(d3, view);
+                else renderChart(d3, target, view);
+            });
+        });
+    }
+
+    var resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            if (globalD3) {
+                renderChart(globalD3, 'completitud', currentCompletitudView);
+                renderChart(globalD3, 'navigation', currentNavigationView);
+                renderEvaluacionesChart(globalD3, currentEvaluacionesView);
+            }
+        }, 250);
+    });
+
+})();
+</script>
