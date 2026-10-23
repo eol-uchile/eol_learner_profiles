@@ -239,7 +239,20 @@
     .recommendation-header { font-weight: bold; margin-bottom: 8px; color: #2c3e50; display: flex; align-items: center; }
     .recommendation-content { overflow: hidden; transition: max-height 0.3s ease-in-out; }
     .recommendation-content.collapsed { max-height: 26px; position: relative; }
-    .recommendation-toggle-btn { background: none; border: none; color: #0075b6; padding: 4px 0 0 0; cursor: pointer; font-size: 13px; font-weight: 600; text-decoration: underline; margin-top: 4px; display: inline-block; }
+
+    /* estilos recomendaciones */
+    .recommendation-toggle-btn { 
+        background: none; border: none; color: #0075b6; padding: 4px 0 0 0; 
+        cursor: pointer; font-size: 13px; font-weight: 600; text-decoration: underline; 
+        margin-top: 4px; 
+        display: none;
+    }
+
+    /* Estilos para los textos de recomendación (reemplaza los inline) */
+    .recommendation-text p:first-of-type { margin-top: 0; }
+    .recommendation-text p:last-of-type { margin-bottom: 0; }
+    .recommendation-text ol { margin-left: 1.5em; margin-bottom: 1em; }
+    .recommendation-text li { margin-bottom: 0.5em; }
 
     .srl-profile, .srl-recommendations { margin-bottom: 2em; padding-bottom: 1.5em; border-bottom: 1px solid #f0f0f0; }
     .profile-dimensions { display: flex; flex-wrap: wrap; gap: 15px; margin-top: 15px; }
