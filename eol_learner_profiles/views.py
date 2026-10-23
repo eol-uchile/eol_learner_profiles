@@ -137,8 +137,6 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
         }
 
         # Renderizado de html
-        context['styles_fragment'] = render_to_string('eol_learner_profiles/_styles.html', context)
-        context['scripts_fragment'] = render_to_string('eol_learner_profiles/_scripts.html', context)
         context['charts_fragment'] = render_to_string('eol_learner_profiles/_navigation_chart.html', context)
         context['evaluaciones_charts_fragment'] = render_to_string('eol_learner_profiles/_evaluaciones_chart.html', context)
         context['videos_charts_fragment'] = render_to_string('eol_learner_profiles/_videos_chart.html', context)
