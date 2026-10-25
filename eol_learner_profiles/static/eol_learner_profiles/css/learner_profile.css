@@ -1,4 +1,3 @@
-
 :root {
     /* Colores Base */
     --srl-color-primary: #005696;
@@ -18,7 +17,7 @@
 }
 
 /* ==========================================
-    1. Estilo base
+1. Estilo base
     ========================================== */
 html { scroll-behavior: smooth; }
 .content-wrapper { padding: 0px; }
@@ -78,7 +77,7 @@ html { scroll-behavior: smooth; }
     letter-spacing: 0.02em; line-height: 1.25; white-space: normal; word-break: break-word;
 }
 
-/* Tooltips unificados (Métricas y Gráficos) */
+/* Tooltips */
 .metrics-info-container, .chart-info-container { position: absolute; z-index: 10; }
 .metrics-info-container { top: 10px; right: 12px; }
 .chart-info-container { display: inline-block; position: relative; margin-left: 6px; }
@@ -115,7 +114,6 @@ html { scroll-behavior: smooth; }
 .metrics-info-list li { margin-bottom: 0.4em; }
 .metrics-info-list li:last-child { margin-bottom: 0; }
 
-/* Tooltips D3 y Videos */
 .d3-tooltip, .video-tooltip {
     position: absolute; background: #2a2a2a; color: #fff; border-radius: 6px;
     padding: 0.8em 1em; font-size: 12px; line-height: 1.5; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
@@ -132,9 +130,13 @@ html { scroll-behavior: smooth; }
 .chart-panel { background: #fff; border: 1px solid var(--srl-border); border-radius: var(--srl-radius); padding: 1.25em 1.5em 1.5em; min-width: 0; }
 .chart-panel h4 { display: flex; align-items: center; gap: 0.4em; font-size: 1em; letter-spacing: 0.03em; margin: 0 0 1em; text-transform: uppercase; }
 
-.chart-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; }
-.chart-header > div:first-child { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 4px; }
-.chart-title { display: flex; align-items: center; margin: 0 !important; font-size: 1.1em; letter-spacing: 0.03em; line-height: 1.2; }
+/* Encabezado del gráfico */
+.chart-panel .chart-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; }
+.chart-panel .chart-header > div:first-child { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 4px; }
+.chart-panel .chart-title { display: flex; align-items: center; margin: 0; font-size: 1.1em; letter-spacing: 0.03em; line-height: 1.2; }
+.chart-panel .chart-header.chart-header-secondary {
+    margin-top: 3em;
+}
 
 .chart-legend { display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 16px; margin: 4px 0 0 0; padding: 0; width: 100%; font-size: 0.85em; color: #555; }
 .legend-item { display: flex; align-items: center; gap: 0.4em; }
@@ -166,30 +168,29 @@ html { scroll-behavior: smooth; }
     overflow: hidden; margin-bottom: 1em; float: right; 
 }
 
-.chart-toggle .toggle-btn { 
+/* Estilos para los botones del toggle */
+#main .chart-toggle .toggle-btn { 
     border: none; background: #f2f2f2; padding: 0.35em 1em; 
     font-size: 0.8em; cursor: pointer; color: #555; 
-    /* Bloqueo de estilos nativos de edX */
-    outline: none !important; 
-    box-shadow: none !important;
-    text-shadow: none !important;
-    background-image: none !important;
+    outline: none; 
+    box-shadow: none;
+    text-shadow: none;
+    background-image: none;
 }
 
-.chart-toggle .toggle-btn:focus,
-.chart-toggle .toggle-btn:active {
-    outline: none !important;
-    box-shadow: none !important;
+#main .chart-toggle .toggle-btn:focus,
+#main .chart-toggle .toggle-btn:active {
+    outline: none;
+    box-shadow: none;
 }
 
-.chart-toggle .toggle-btn.active,
-.chart-toggle .toggle-btn.active:focus,
-.chart-toggle .toggle-btn.active:hover { 
-    background: var(--srl-color-primary) !important; 
-    color: #fff !important; 
+#main .chart-toggle .toggle-btn.active,
+#main .chart-toggle .toggle-btn.active:focus,
+#main .chart-toggle .toggle-btn.active:hover { 
+    background: var(--srl-color-primary); 
+    color: #fff; 
 }
 
-/* Estilos específicos D3 SVG */
 #navigation-chart, #completitud-chart, #evaluaciones-chart { min-width: 700px; }
 #navigation-chart svg, #completitud-chart svg, #evaluaciones-chart svg { display: block; width: 100%; height: auto; }
 
@@ -248,7 +249,6 @@ html { scroll-behavior: smooth; }
     display: none;
 }
 
-/* Estilos para los textos de recomendación (reemplaza los inline) */
 .recommendation-text p:first-of-type { margin-top: 0; }
 .recommendation-text p:last-of-type { margin-bottom: 0; }
 .recommendation-text ol { margin-left: 1.5em; margin-bottom: 1em; }
@@ -273,11 +273,12 @@ html { scroll-behavior: smooth; }
     .chart-toggle, .toggle-buttons { display: flex; width: 100%; flex-wrap: wrap; gap: 4px; margin-bottom: 16px; }
     .chart-toggle .toggle-btn, .toggle-buttons button { flex: 1 1 auto; min-width: 80px; font-size: 11px; padding: 8px 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     
-    .video-module-summary, .video-item-row { flex-wrap: wrap !important; align-items: flex-start; padding: 16px 12px !important; }
-    .video-title { flex: 1 1 calc(100% - 30px); margin-bottom: 16px; font-weight: bold; }
-    .video-bar-wrapper { flex: 1 1 100% !important; width: 100% !important; margin-bottom: 8px; }
-    .video-bar-labels { width: 100%; }
-    .video-meta { flex: 1 1 100%; text-align: left; }
+    .videos-accordion-wrapper .video-module-summary, 
+    .videos-accordion-wrapper .video-item-row { flex-wrap: wrap; align-items: flex-start; padding: 16px 12px; }
+    .videos-accordion-wrapper .video-title { flex: 1 1 calc(100% - 30px); margin-bottom: 16px; font-weight: bold; }
+    .videos-accordion-wrapper .video-bar-wrapper { flex: 1 1 100%; width: 100%; margin-bottom: 8px; }
+    .videos-accordion-wrapper .video-bar-labels { width: 100%; }
+    .videos-accordion-wrapper .video-meta { flex: 1 1 100%; text-align: left; }
     
     .navigation-recommendation-box { margin-top: 15px; }
 }
