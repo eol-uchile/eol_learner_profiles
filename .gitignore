@@ -59,3 +59,6 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+eol_learner_profiles/venv_excel/
+eol_learner_profiles/generar_json.py
+**/.DS_Store

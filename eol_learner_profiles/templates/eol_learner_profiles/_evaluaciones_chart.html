@@ -1,0 +1,59 @@
+## mako
+<%! from django.utils.translation import ugettext as _ %>
+<section class="chart-panel" id="panel-evaluaciones">
+    <div class="chart-header">
+        <div>
+            <h3 class="chart-title">
+                ${_('EVALUACIONES')}
+                <div class="chart-info-container">
+                    <button class="tooltip-trigger" aria-label="${_('Información')}">ⓘ</button>
+                    <div class="tooltip-box" role="tooltip">
+                        ${_('Calificación obtenida y tiempo registrado para completar cada evaluación, comparados con la mediana de los participantes del curso.')}
+                    </div>
+                </div>
+            </h3>
+            <div class="chart-legend">
+                <span class="legend-item">
+                    <i class="legend-bar legend-tu-pink"></i>
+                    ${_('TÚ')}
+                </span>
+                <span class="legend-item">
+                    <i class="legend-marker legend-media"></i>
+                    ${_('MEDIANA DEL CURSO')}
+                </span>
+            </div>
+        </div>
+        <div class="chart-toggle view-toggle-evaluaciones">
+            <button type="button" class="toggle-btn active" data-view="calificaciones" data-target="evaluaciones">${_('CALIFICACIONES')}</button>
+            <button type="button" class="toggle-btn" data-view="tiempo" data-target="evaluaciones">${_('TIEMPO')}</button>
+        </div>
+    </div>
+
+    <div class="chart-scroll-wrap" id="evaluaciones-chart-wrapper">
+        <div id="evaluaciones-chart"></div>
+    </div>
+    
+    <div id="evaluaciones-recommendation" class="navigation-recommendation-wrapper">
+        <div class="navigation-recommendation-box">
+            <div class="recommendation-header">
+                💡 ${_('Recomendación')}
+            </div>
+            <div class="recommendation-content collapsed" id="rec-eval-content">
+                <div class="recommendation-text" id="rec-eval-text-content">
+                    <p>${_('El sistema registra que has invertido 3:01 en las subsecciones evaluadas, lo que está cercano a la mediana de tu curso, mientras el promedio de tus calificaciones se encuentra en el tercio inferior.')}</p>
+                    
+                    <p>${_('Para convertir ese tiempo de dedicación en aprendizajes sólidos y mejores calificaciones, te sugerimos:')}</p>
+                    
+                    <ol>
+                        <li>${_('Detener la lectura lineal y elaborar un mapa conceptual, esquema o resumen con tus propias palabras por cada tema revisado.')}</li>
+                        <li>${_('Resolver al menos dos ejercicios prácticos del mismo nivel de dificultad antes de rendir la siguiente evaluación.')}</li>
+                        <li>${_('Consultar activamente tus dudas con docentes o compañeros/as cuando identifiques contenidos que resulten difíciles de comprender.')}</li>
+                    </ol>
+                    
+                    <p>${_('¿Qué técnicas o formas de estudio utilizas actualmente al preparar un tema y cómo sientes que te ayudan al momento de responder? Dedicar tiempo a descubrir tu mejor manera de aprender es una inversión valiosa para alcanzar tus metas académicas.')}</p>
+                </div>
+            </div>
+            <button class="recommendation-toggle-btn" id="rec-eval-toggle-btn" onclick="toggleEvalRecommendationText()">Ver más</button>
+        </div>
+    </div>
+</section>
