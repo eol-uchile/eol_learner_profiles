@@ -1,0 +1,30 @@
+[
+    {
+        "key": "tiempo",
+        "label": "Tiempo total",
+        "value": "1H55M",
+        "unit": "",
+        "tooltip": "Tiempo total de navegación registrado en el curso."
+    },
+    {
+        "key": "contenido",
+        "label": "Contenido completado",
+        "value": 50,
+        "unit": "%",
+        "tooltip": "Porcentaje del contenido del curso completado."
+    },
+    {
+        "key": "evaluaciones",
+        "label": "Promedio evaluaciones",
+        "value": 67,
+        "unit": "%",
+        "tooltip": "Promedio de las evaluaciones rendidas."
+    },
+    {
+        "key": "videos",
+        "label": "Videos",
+        "value": "7/10",
+        "unit": "",
+        "tooltip": "Cantidad de videos visualizados."
+    }
+]

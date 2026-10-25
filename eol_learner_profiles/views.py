@@ -30,8 +30,6 @@ from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 
 logger = logging.getLogger(__name__)
 
-# NOTA: Mantenemos la función get_navigation_time por si se necesita a futuro, 
-# pero ya no la llamaremos en get_context porque usaremos el JSON.
 def get_navigation_time(uid, course_id, group="week", start_date=None, end_date=None):
     base_url = settings.EOL_ANALYTICS_API_URL.rstrip("/")
     api_token = settings.EOL_ANALYTICS_API_TOKEN
@@ -79,7 +77,8 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
         # 1. Cargar el JSON desde la carpeta 'data'
         current_dir = os.path.dirname(os.path.abspath(__file__))
         json_path = os.path.join(current_dir, 'data', 'dashboard_data.json')
-        
+
+        ## datos para graficos
         dashboard_data = {}
         if os.path.exists(json_path):
             with open(json_path, 'r', encoding='utf-8') as f:
@@ -87,8 +86,17 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
         else:
             logger.error("Archivo dashboard_data.json no encontrado en %s", json_path)
 
+        ## datos para metricas resumen
+        metricas_path = os.path.join(current_dir, 'data', 'mock_metricas.json')
+        metricas_data = []
+        if os.path.exists(metricas_path):
+            with open(metricas_path, 'r', encoding='utf-8') as f:
+                metricas_data = json.load(f)
+        else:
+            logger.error("Archivo mock_metricas.json no encontrado en %s", metricas_path)
+            
+
         if "estudiantes" in dashboard_data:
-            # Es la base de datos completa
             estudiantes = dashboard_data.get("estudiantes", {})
             agregaciones = dashboard_data.get("agregaciones", {})
             
@@ -100,12 +108,9 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
             else:
                 estudiante_data = {}
         else:
-            # Es el mockup de un solo estudiante
             estudiante_data = dashboard_data
             agregaciones = {"MEDIAN": {}}
 
-        # 3. Mantenemos CourseGradeFactory si lo necesitas para evaluaciones específicas,
-        # pero comentamos las variables mockeadas anteriores.
         course_grade = CourseGradeFactory().read(request.user, course)
         evaluaciones_data = []
         for subsection in course_grade.subsection_grades.values():
@@ -117,7 +122,7 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
                     'score_user': round(score_pct, 1)
                 })
 
-        # 4. Inyectar todo al contexto
+        # 4. Contexto
         context = {
             "course": course,
             'page_url': reverse('learner_profile_view', kwargs={'course_id': six.text_type(course_key)}),
@@ -129,6 +134,7 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
             "navigation_chapter_json": json.dumps(estudiante_data.get("metrics_per_structure", [])),
             "videos_json": json.dumps(estudiante_data.get("metrics_per_video", [])),
             "agregaciones_json": json.dumps(agregaciones),
+            "metricas_json": json.dumps(metricas_data),
             
             # Datos locales
             "uid_actual_json": json.dumps(uid),

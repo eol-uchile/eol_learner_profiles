@@ -12,41 +12,9 @@
 
 <%include file="/courseware/course_navigation.html" args="active_page='eol_leaner_profile'" />
 
-<%
-    metricas_list = UNDEFINED if 'metricas' not in capture(lambda: metricas) else metricas
-    if metricas_list is UNDEFINED or metricas_list is None:
-        metricas_list = [
-            {'key': 'tiempo', 'label': _('Tiempo total'), 'value': '1H55M', 'unit': '', 'tooltip': _('Tiempo total de navegación registrado en el curso.')},
-            {'key': 'contenido', 'label': _('Contenido completado'), 'value': 50, 'unit': '%', 'tooltip': _('Porcentaje del contenido del curso completado.')},
-            {'key': 'evaluaciones', 'label': _('Promedio evaluaciones'), 'value': 67, 'unit': '%', 'tooltip': _('Promedio de las evaluaciones rendidas.')},
-            {'key': 'videos', 'label': _('Videos'), 'value': '7/10', 'unit': '', 'tooltip': _('Cantidad de videos visualizados.')},
-        ]
-%>
-
 <main id="main" aria-label="Content" tabindex="-1">
     <section class="srl-metrics-bar" id="srl-metrics-bar">
-        % for metric in metricas_list:
-            <div class="metric-item">
-                <span class="metric-value">${metric['value']}${metric.get('unit', '')}</span>
-                <div class="metric-details">
-                    <span class="metric-label">${metric['label']}</span>
-                </div>
-            </div>
-        % endfor
-
-        <div class="metrics-info-container">
-            <button class="tooltip-trigger" aria-label="${_('Información sobre las métricas')}">ⓘ</button>
-            <div class="tooltip-box" role="tooltip">
-                <strong>${_('Información de métricas:')}</strong>
-                <ul class="metrics-info-list">
-                    % for metric in metricas_list:
-                        % if metric.get('tooltip'):
-                            <li><strong>${metric['label']}:</strong> ${metric['tooltip']}</li>
-                        % endif
-                    % endfor
-                </ul>
-            </div>
-        </div>
+        <p style="color:#888; font-size: 0.9em;">Cargando métricas...</p>
     </section>
 
     <div class="srl-charts-wrapper">
@@ -54,27 +22,10 @@
         ${ evaluaciones_charts_fragment | n }
         ${ videos_charts_fragment | n }
     </div>
-
-    <!-- Sección: Perfil de aprendizaje -->
-    % if profile:
-    <section class="srl-profile" id="srl-profile">
-        <h3 class="hd hd-3">${_('Tu Perfil de Aprendizaje')}</h3>
-        <div class="profile-dimensions">
-            % for dim_key, dim_data in profile.items():
-                <div class="dimension-card" data-dimension="${dim_key}">
-                    <h4>${dim_data.get('label', dim_key)}</h4>
-                    <p class="dimension-result">
-                        ${_('Preferencia:')} <strong>${dim_data.get('preference', 'N/A')}</strong>
-                        (${dim_data.get('intensity', 'N/A')})
-                    </p>
-                </div>
-            % endfor
-        </div>
-    </section>
-    % endif
 </main>
 
 <script>
+    var metricasData = ${metricas_json if metricas_json else '[]' | n};
     var userNameActual = ${user_name_json if user_name_json else '""' | n};
     var navigationWeek = ${navigation_week_json if navigation_week_json else '[]' | n};
     var navigationChapter = ${navigation_chapter_json if navigation_chapter_json else '[]' | n};
