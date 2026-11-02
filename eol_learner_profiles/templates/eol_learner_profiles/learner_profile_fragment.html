@@ -25,14 +25,18 @@
 </main>
 
 <script>
-    var metricasData = ${metricas_json if metricas_json else '[]' | n};
-    var userNameActual = ${user_name_json if user_name_json else '""' | n};
-    var navigationWeek = ${navigation_week_json if navigation_week_json else '[]' | n};
-    var navigationChapter = ${navigation_chapter_json if navigation_chapter_json else '[]' | n};
-    var videosData = ${videos_json if videos_json else '[]' | n};
-    var agregacionesData = ${agregaciones_json if agregaciones_json else '{}' | n};
-    var uidActual = ${uid_actual_json if uid_actual_json else 'null' | n};
-    var evaluacionesData = ${evaluaciones_json if evaluaciones_json else '[]' | n};
+    window.metricasData = ${metricas_json if metricas_json else '[]' | n};
+    window.userNameActual = ${user_name_json if user_name_json else '""' | n};
+    window.uidActual = ${uid_actual_json if uid_actual_json else 'null' | n};
+    window.evaluacionesData = ${evaluaciones_json if evaluaciones_json else '[]' | n};
+    
+    window.navWeekData = ${nav_week_json if nav_week_json else '{}' | n};
+    window.compWeekData = ${comp_week_json if comp_week_json else '{}' | n};
+    window.navChapterData = ${nav_chapter_json if nav_chapter_json else '{}' | n};
+    window.compChapterData = ${comp_chapter_json if comp_chapter_json else '{}' | n};
+    window.videosData = ${videos_json if videos_json else '{}' | n};
+
+    window.problemsTimeData = ${problems_time_json if problems_time_json else '{}' | n};
 </script>
 
 

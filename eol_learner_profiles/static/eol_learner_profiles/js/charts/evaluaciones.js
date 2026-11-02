@@ -1,25 +1,39 @@
 import { showTooltip, moveTooltip, hideTooltip, applyRecommendationCollapse } from '../utils/helpers.js';
-import { dataCalificaciones, DATA_EVALUACIONES_TIEMPO } from '../mock-data.js';
 
 export function renderEvaluacionesChart(d3, view) {
     var container = document.getElementById('evaluaciones-chart');
     if (!container) return;
-    container.innerHTML = '';
 
-    if (view === 'calificaciones' && !dataCalificaciones.length) {
-        container.innerHTML = '<p style="padding:20px; color:#666;">No hay evaluaciones disponibles aún.</p>';
-        return;
-    }
-
-    var activeData = view === 'calificaciones' ? dataCalificaciones : DATA_EVALUACIONES_TIEMPO;
+    var activeData = [];
 
     if (view === 'calificaciones') {
+        activeData = window.evaluacionesData || [];
+        if (!activeData.length) {
+            return;
+        }
         var contadoresTipo = {};
         activeData.forEach(function(d) {
             var letra = d.eval_type ? d.eval_type.charAt(0).toUpperCase() : 'E';
             if (!contadoresTipo[letra]) contadoresTipo[letra] = 0;
             contadoresTipo[letra]++;
             d.short_label = letra + contadoresTipo[letra]; 
+        });
+    } else {
+        var rawProblems = (window.problemsTimeData && window.problemsTimeData.grouped_data) ? window.problemsTimeData.grouped_data : [];
+        if (!rawProblems.length) {
+            return;
+        }
+        activeData = rawProblems.map(function(d, i) {
+            return {
+                name: 'Problema ' + (i + 1),
+                short_label: 'P' + (i + 1),
+                time_user: (d.individual_time || 0) / 60,
+                median: (d.median_time || 0) / 60,
+                q1: (d.p33_time || 0) / 60,
+                q3: (d.p66_time || 0) / 60,
+                min: (d.p33_time || 0) / 60, // fix
+                max: (d.p66_time || 0) / 60 // fix
+            };
         });
     }
 
@@ -61,7 +75,7 @@ export function renderEvaluacionesChart(d3, view) {
     function getEvalTooltipHtml(d) {
         var label = view === 'calificaciones' ? ((d.eval_type ? d.eval_type + ': ' : '') + d.name) : d.name;
         var valTu = view === 'calificaciones' ? d.score_user + '%' : d.time_user.toFixed(1) + ' min';
-        var valMedia = view === 'calificaciones' ? d.score_median + '%' : d.median.toFixed(1) + ' min';
+        var valMedia = view === 'calificaciones' ? (d.score_median || 0) + '%' : (d.median || 0).toFixed(1) + ' min';
         return '<strong>' + label + '</strong><br>Tú: ' + valTu + '<br>Mediana del curso: ' + valMedia;
     }
 
@@ -75,7 +89,7 @@ export function renderEvaluacionesChart(d3, view) {
             .on('mouseout touchend', hideTooltip);
 
         chart.selectAll('.chart-average').data(activeData).enter().append('rect')
-            .attr('class', 'chart-average').attr('x', function (d, i) { return x(i) - 2; }).attr('y', function (d) { return y(d.score_median) - 3; })
+            .attr('class', 'chart-average').attr('x', function (d, i) { return x(i) - 2; }).attr('y', function (d) { return y(d.score_median || 0) - 3; })
             .attr('width', x.bandwidth() + 4).attr('height', 6).attr('rx', 2).style('pointer-events', 'none').attr('fill', '#5d5d5d');
             
     } else {
@@ -86,8 +100,8 @@ export function renderEvaluacionesChart(d3, view) {
 
         boxGroup.append('line').attr('x1', function(d, i) { return x(i) + x.bandwidth() / 2; }).attr('x2', function(d, i) { return x(i) + x.bandwidth() / 2; }).attr('y1', function(d) { return y(d.min); }).attr('y2', function(d) { return y(d.q1); }).attr('stroke', '#7a7a7a').attr('stroke-width', 4);
         boxGroup.append('line').attr('x1', function(d, i) { return x(i) + x.bandwidth() / 2; }).attr('x2', function(d, i) { return x(i) + x.bandwidth() / 2; }).attr('y1', function(d) { return y(d.q3); }).attr('y2', function(d) { return y(d.max); }).attr('stroke', '#d9d9d9').attr('stroke-width', 4);
-        boxGroup.append('rect').attr('x', function (d, i) { return x(i); }).attr('y', function (d) { return y(d.median); }).attr('width', x.bandwidth()).attr('height', function (d) { return y(d.q1) - y(d.median); }).attr('fill', '#7a7a7a');
-        boxGroup.append('rect').attr('x', function (d, i) { return x(i); }).attr('y', function (d) { return y(d.q3); }).attr('width', x.bandwidth()).attr('height', function (d) { return y(d.median) - y(d.q3); }).attr('fill', '#d9d9d9');
+        boxGroup.append('rect').attr('x', function (d, i) { return x(i); }).attr('y', function (d) { return y(d.median); }).attr('width', x.bandwidth()).attr('height', function (d) { return Math.max(0, y(d.q1) - y(d.median)); }).attr('fill', '#7a7a7a');
+        boxGroup.append('rect').attr('x', function (d, i) { return x(i); }).attr('y', function (d) { return y(d.q3); }).attr('width', x.bandwidth()).attr('height', function (d) { return Math.max(0, y(d.median) - y(d.q3)); }).attr('fill', '#d9d9d9');
         boxGroup.append('rect').attr('x', function (d, i) { return x(i); }).attr('y', function (d) { return y(d.time_user) - 3; }).attr('width', x.bandwidth()).attr('height', 6).attr('rx', 2).attr('fill', '#c67b9c');
     }
     applyRecommendationCollapse('rec-eval-content', 'rec-eval-toggle-btn');
