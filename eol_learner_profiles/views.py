@@ -1,19 +1,12 @@
-# -*- coding: utf-8 -*-
-
-# Python Standard Libraries
 import json
 import logging
 import six
 
-# Installed packages (via pip)
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.core.exceptions import PermissionDenied
-from django.http import Http404, JsonResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.http import Http404
+from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.urls import reverse
-from django.views.generic.base import View
 
 # Edx dependencies
 from lms.djangoapps.courseware.access import has_access
@@ -22,11 +15,20 @@ from lms.djangoapps.instructor import permissions
 from opaque_keys.edx.keys import CourseKey
 from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
 from web_fragments.fragment import Fragment
+from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 
+from .fetch_metrics import (
+    get_api_navigation_time,
+    get_api_problem_time,
+    get_api_completion_progress,
+    get_api_video_metrics,
+    get_api_engagement_metrics,
+    check_api_availability,
+    get_local_dashboard_data,
+    get_local_metrics_data
+)
 
 logger = logging.getLogger(__name__)
-
-
 
 class EolLearnerProfileFragmentView(EdxFragmentView):
     def render_to_fragment(self, request, course_id, **kwargs):
@@ -40,17 +42,101 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
 
         context = self.get_context(request, course_id, course, course_key)
         html = render_to_string('eol_learner_profiles/learner_profile_fragment.html', context)
-        fragment = Fragment(html)
-        return fragment
+        return Fragment(html)
 
     def get_context(self, request, course_id, course, course_key):
+        uid = request.user.id
+        current_username = request.user.username
+        user_name = request.user.profile.name if hasattr(request.user, 'profile') else current_username
+
+        logger.info("EOL Analytics - username=%s uid=%s", current_username, uid)
+
+        # Flag uso API
+        use_api_setting = getattr(settings, 'EOL_LEARNER_PROFILES_USE_API', True)
+        USE_API = str(use_api_setting).lower() == 'true'
+
+        if USE_API:
+            check_api_availability()
+            
+            nav_data_week = get_api_navigation_time(uid, course_id, group="week")
+            comp_data_week = get_api_completion_progress(uid, course_id, group="week")
+            nav_data_chapter = get_api_navigation_time(uid, course_id, group="chapter")
+            comp_data_chapter = get_api_completion_progress(uid, course_id, group="chapter")
+            vid_data = get_api_video_metrics(uid, course_id)
+            prob_data_time = get_api_problem_time(uid, course_id)
+        else:
+            nav_data_week = comp_data_week = nav_data_chapter = comp_data_chapter = vid_data = {}
+
+        # Evaluaciones
+        course_grade = CourseGradeFactory().read(request.user, course)
+        evaluaciones_data = []
+        
+        for subsection in course_grade.subsection_grades.values():
+            if subsection.format: 
+                score_pct = (subsection.percent_graded * 100) if subsection.percent_graded else 0.0
+                evaluaciones_data.append({
+                    'name': subsection.display_name, 
+                    'eval_type': subsection.format,
+                    'score_user': round(score_pct, 1)
+                })
+
+        # Calcular el promedio de las evaluaciones
+        promedio_eval = 0
+        if evaluaciones_data:
+            suma_notas = sum(item['score_user'] for item in evaluaciones_data)
+            promedio_eval = round(suma_notas / len(evaluaciones_data), 1)
+
+        # Resumen
+        tiempo_minutos = round(float(nav_data_week.get("total_time", 0)) / 60) if nav_data_week.get("total_time") else 0
+        
+        metricas_data = [
+            {
+                "key": "tiempo",
+                "label": "Tiempo total",
+                "value": f"{tiempo_minutos}M",
+                "tooltip": "Tiempo total de navegación (en minutos)."
+            },
+            {
+                "key": "contenido",
+                "label": "Contenido Completado",
+                "value": comp_data_week.get("total_progress", 0),
+                "unit": "%"
+            },
+            {
+                "key": "evaluaciones",
+                "label": "Promedio Evaluaciones",
+                "value": promedio_eval,
+                "unit": "%",
+                "tooltip": "Promedio de tus calificaciones en el curso."
+            },
+            {
+                "key": "videos",
+                "label": "Videos",
+                "value": f"{vid_data.get('individual_video_count', 0)}/{vid_data.get('total_video_count', 0)}"
+            },      
+        ]
+
         context = {
             "course": course,
-            'page_url': reverse(
-                'learner_profile_view',
-                kwargs={'course_id': six.text_type(course_key)}
-            ),
+            'page_url': reverse('learner_profile_view', kwargs={'course_id': six.text_type(course_key)}),
             "content": None,
-            "max_unit": None
+            "max_unit": None,
+            
+            "nav_week_json": json.dumps(nav_data_week),
+            "comp_week_json": json.dumps(comp_data_week),
+            "nav_chapter_json": json.dumps(nav_data_chapter),
+            "comp_chapter_json": json.dumps(comp_data_chapter),
+            "videos_json": json.dumps(vid_data),
+            "problems_time_json": json.dumps(prob_data_time),
+            
+            "metricas_json": json.dumps(metricas_data),
+            "uid_actual_json": json.dumps(uid),
+            "user_name_json": json.dumps(user_name),
+            "evaluaciones_json": json.dumps(evaluaciones_data),
         }
+
+        context['charts_fragment'] = render_to_string('eol_learner_profiles/_navigation_chart.html', context)
+        context['evaluaciones_charts_fragment'] = render_to_string('eol_learner_profiles/_evaluaciones_chart.html', context)
+        context['videos_charts_fragment'] = render_to_string('eol_learner_profiles/_videos_chart.html', context)
+
         return context
