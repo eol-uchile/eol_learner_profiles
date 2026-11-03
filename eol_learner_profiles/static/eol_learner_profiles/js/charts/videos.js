@@ -16,12 +16,13 @@ export function renderVideosChart() {
     rawVideos.forEach(function(modulo, index) {
         var isOpen = index === 0 ? 'open' : '';
         
-        // Desplegable general
-        var valUser = Math.min(Math.max(modulo.average_visualization_rate || 0, 0), 100);
-        var valMedia = Math.min(Math.max(modulo.median_visualization_rate || 0, 0), 100); 
+        // --- DATOS DEL MÓDULO (Desplegable general) ---
+        // Leemos average_visualization_rate o visualization_rate (según lo que mande la API)
+        var valUser = Math.min(Math.max(modulo.average_visualization_rate || modulo.visualization_rate || 0, 0), 100);
+        // La API aún no manda la mediana a nivel de módulo, se mantiene en 0 por ahora
+        var valMedia = Math.min(Math.max(modulo.visualization_rate_median || 0, 0), 100); 
         
         var timeUserStr = formatTime(modulo.sum_interaction_time || 0);
-        
         var cantidadVideosModulo = (modulo.videos && Array.isArray(modulo.videos)) ? modulo.videos.length : 0;
 
         htmlString += '<details class="video-module-details" ' + isOpen + '>';
@@ -36,7 +37,10 @@ export function renderVideosChart() {
 
         htmlString += '  <div class="video-bar-bg tooltip-target" ' + tooltipAttr + '>';
         htmlString += '    <div class="video-bar-fill" style="width: ' + valUser + '%;"></div>';
-        htmlString += '    <div class="video-median-marker" style="left: ' + valMedia + '%;"></div>';
+        // Solo dibujamos la marca si hay mediana mayor a 0 (para que no ensucie si la API no la manda)
+        if (valMedia > 0) {
+            htmlString += '    <div class="video-median-marker" style="left: ' + valMedia + '%;"></div>';
+        }
         htmlString += '  </div>';
         htmlString += '  <div class="video-bar-labels"><span>0%</span><span>100%</span></div>';
         htmlString += '</div><div class="video-meta">(' + cantidadVideosModulo + ' videos)</div></summary>';
@@ -45,19 +49,19 @@ export function renderVideosChart() {
         if (cantidadVideosModulo > 0) {
             htmlString += '<div class="video-items-list">';
             modulo.videos.forEach(function(video) {
-                var vUser = Math.min(Math.max(video.visualization_rate || 0, 0), 100);
-                
-                var vMedia = Math.min(Math.max(video.median_visualization_rate || 0, 0), 100); 
+                var vUser = Math.min(Math.max(video.visualization_rate_individual || 0, 0), 100);
+                var vMedia = Math.min(Math.max(video.visualization_rate_median || 0, 0), 100); 
                 
                 var vTimeUserStr = formatTime(video.interaction_time || 0);
 
-                // Sumam play + pause del usuario para el tooltip
-                var sumInteraccionesUser = (video.individual_play_count || 0) + (video.individual_pause_count || 0);
+                var sumInteraccionesUser = (video.play_count_individual || 0) + (video.pause_count_individual || 0) + (video.seek_count_individual || 0);
+                var sumInteraccionesMedia = (video.play_count_median || 0) + (video.pause_count_median || 0) + (video.seek_count_median || 0);
 
                 var vTooltipAttr = 'data-name="' + (video.name || 'Video') + '" ' +
                                    'data-tu="' + Math.round(vUser) + '%" ' +
                                    'data-media="' + Math.round(vMedia) + '%" ' +
                                    'data-inter-user="' + Math.round(sumInteraccionesUser) + '" ' +
+                                   'data-inter-media="' + Math.round(sumInteraccionesMedia) + '" ' +
                                    'data-tiempo-user="' + vTimeUserStr + '" ';
 
                 htmlString += '<div class="video-item-row"><div class="video-title">' + (video.name || 'Video') + '</div>';
@@ -75,21 +79,21 @@ export function renderVideosChart() {
 
     container.innerHTML = htmlString;
     
-    // Tooltips
+    // tooltips
     document.querySelectorAll('#videos-accordion-container .tooltip-target').forEach(function(target) {
         function handleHover(e) {
             var name = target.getAttribute('data-name');
             var tuPct = target.getAttribute('data-tu');
             var medPct = target.getAttribute('data-media');
             var interUser = target.getAttribute('data-inter-user');
+            var interMed = target.getAttribute('data-inter-media');
             var tiempoUser = target.getAttribute('data-tiempo-user');
 
-            // HTML del tooltip
             var html = '<strong>' + name + '</strong><br>' +
                        '📊 Avance: Tú: ' + tuPct + ' | Mediana: ' + medPct + '<br>';
             
             if (interUser !== null) {
-                html += '🖱️ Interacciones: ' + interUser + '<br>';
+                html += '🖱️ Interacciones: Tú: ' + interUser + ' | Mediana: ' + interMed + '<br>';
             }
             
             html += '⏱️ Tiempo visualizado: ' + tiempoUser;

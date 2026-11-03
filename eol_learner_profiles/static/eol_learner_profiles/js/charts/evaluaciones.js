@@ -3,6 +3,7 @@ import { showTooltip, moveTooltip, hideTooltip, applyRecommendationCollapse } fr
 export function renderEvaluacionesChart(d3, view) {
     var container = document.getElementById('evaluaciones-chart');
     if (!container) return;
+    container.innerHTML = '';
 
     var activeData = [];
 
@@ -31,8 +32,8 @@ export function renderEvaluacionesChart(d3, view) {
                 median: (d.median_time || 0) / 60,
                 q1: (d.p33_time || 0) / 60,
                 q3: (d.p66_time || 0) / 60,
-                min: (d.p33_time || 0) / 60, // fix
-                max: (d.p66_time || 0) / 60 // fix
+                min: (d.min_time || 0) / 60, 
+                max: (d.max_time || 0) / 60
             };
         });
     }

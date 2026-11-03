@@ -4,6 +4,7 @@ export function renderChart(d3, chartType, view) {
     var containerId = chartType === 'completitud' ? 'completitud-chart' : 'navigation-chart';
     var container = document.getElementById(containerId);
     if (!container) return;
+    container.innerHTML = '';
 
     var rawData = [];
     if (chartType === 'completitud') {
