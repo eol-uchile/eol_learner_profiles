@@ -29,6 +29,7 @@
         <!-- "grafico" tipo acordeon -->
     </div>
     
+    % if rec_videos_dict:
     <div id="videos-recommendation" class="navigation-recommendation-wrapper">
         <div class="navigation-recommendation-box">
             <div class="recommendation-header">
@@ -36,20 +37,29 @@
             </div>
             <div class="recommendation-content collapsed" id="rec-videos-content">
                 <div class="recommendation-text" id="rec-videos-text-content">
-                    <p>${_('El sistema registra que tanto el promedio del porcentaje visualizado de cada video como las interacciones que tienes con el reproductor (play, pausa, cambio de posición) se sitúan en torno a la mediana de tu curso. Este es un buen momento para darle a tu estudio un propósito más reflexivo.')}</p>
                     
-                    <p>${_('Para dar un paso adelante en la consolidación de tus conocimientos, te sugerimos:')}</p>
+                    <p>${rec_videos_dict.get('introduccion', '')}</p>
                     
-                    <ol>
-                        <li>${_('Definir un propósito claro antes de iniciar la reproducción y reflexionar sobre qué afirmaciones puedes contrastar con lecturas o temas anteriores.')}</li>
-                        <li>${_('Comparar los procedimientos expuestos en pantalla con otros ejercicios prácticos resueltos previamente.')}</li>
-                        <li>${_('Compartir y debatir los apuntes y resúmenes extraídos del video con tus compañeros/as de estudio.')}</li>
-                    </ol>
+                    % if rec_videos_dict.get('subtitulo'):
+                        <p>${rec_videos_dict.get('subtitulo', '')}</p>
+                    % endif
                     
-                    <p>${_('¿Qué conceptos de los últimos videos pudiste relacionar con las lecturas o con los ejercicios que habías trabajado anteriormente? Contrastar la información y compartir tus apuntes con otros te permitirá afianzar tu aprendizaje con mayor profundidad.')}</p>
+                    % if rec_videos_dict.get('pasos'):
+                        <ol>
+                        % for paso in rec_videos_dict.get('pasos', []):
+                            <li>${paso}</li>
+                        % endfor
+                        </ol>
+                    % endif
+                    
+                    % if rec_videos_dict.get('cierre'):
+                        <p>${rec_videos_dict.get('cierre', '')}</p>
+                    % endif
+                    
                 </div>    
             </div>
-            <button class="recommendation-toggle-btn" id="rec-videos-toggle-btn" onclick="toggleVideosRecommendationText()">Ver más</button>
+            <button class="recommendation-toggle-btn" id="rec-videos-toggle-btn" onclick="toggleVideosRecommendationText()">${_('Ver más')}</button>
         </div>
     </div>
+    % endif
 </section>

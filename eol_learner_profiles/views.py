@@ -31,6 +31,23 @@ from .fetch_metrics import (
 
 logger = logging.getLogger(__name__)
 
+def get_recommendation(vid_data, nav_data, eval_data):
+            try:
+                rec_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'recomendaciones.json')
+                with open(rec_path, 'r', encoding='utf-8') as f:
+                    recomendaciones = json.load(f)
+                    
+                rec_mock = "rec_test" 
+
+                rec_videos = recomendaciones.get("videos", {}).get(rec_mock, None)
+                rec_nav = recomendaciones.get("navegacion", {}).get(rec_mock, None)
+                rec_eval = recomendaciones.get("evaluaciones", {}).get(rec_mock, None)
+
+                return rec_videos, rec_nav, rec_eval
+            except Exception as e:
+                logger.error("Error leyendo recomendaciones.json: %s", str(e))
+                return None
+
 class EolLearnerProfileFragmentView(EdxFragmentView):
     def render_to_fragment(self, request, course_id, **kwargs):
         course_key = CourseKey.from_string(course_id)
@@ -130,8 +147,10 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
                 "value": f"{vid_data.get('individual_video_count', 0)}/{vid_data.get('total_video_count', 0)}"
             }
         ]
-        
 
+        # Recomendaciones
+        rec_vid_dict, rec_nav_dict, rec_eval_dict = get_recommendation(vid_data, nav_data_week, evaluaciones_data)
+        
         context = {
             "course": course,
             'page_url': reverse('learner_profile_view', kwargs={'course_id': six.text_type(course_key)}),
@@ -149,6 +168,10 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
             "uid_actual_json": json.dumps(uid),
             "user_name_json": json.dumps(user_name),
             "evaluaciones_json": json.dumps(evaluaciones_data),
+
+            "rec_videos_dict": rec_vid_dict,
+            "rec_nav_dict": rec_nav_dict,
+            "rec_eval_dict": rec_eval_dict,
         }
 
         context['charts_fragment'] = render_to_string('eol_learner_profiles/_navigation_chart.html', context)

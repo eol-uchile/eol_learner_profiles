@@ -65,27 +65,37 @@
     </div>
     
     <!-- Recomendacion -->
-    <div id="mixto-recommendation" class="navigation-recommendation-wrapper">
+    % if rec_nav_dict:
+    <div id="navigation-recommendation" class="navigation-recommendation-wrapper">
         <div class="navigation-recommendation-box">
             <div class="recommendation-header">
                 💡 ${_('Recomendación')}
             </div>
             <div class="recommendation-content collapsed" id="rec-content">
                 <div class="recommendation-text" id="rec-text-content">
-                    <p>${_('El sistema registra que has completado el 74% de los contenidos del curso, lo que se sitúa en el tercio superior del curso, mientras que tu tiempo de navegación en la plataforma se ubica cerca de la mediana. Cuentas con un avance rápido que conviene acompañar con espacios de integración conceptual.')}</p>
                     
-                    <p>${_('Para asegurar que esta estrategia te conduzca a los mejores resultados evaluativos y formativos, te sugerimos:')}</p>
+                    <p>${rec_nav_dict.get('introduccion', '')}</p>
                     
-                    <ol>
-                        <li>${_('Diseñar un esquema u organizador gráfico propio para integrar transversalmente los contenidos de las unidades ya completadas.')}</li>
-                        <li>${_('Realizar un ejercicio de reflexión quincenal comparando tus avances actuales con tus metas de desarrollo profesional.')}</li>
-                        <li>${_('Monitorear de forma constante el tiempo que dedicas a la navegación y revisar tus demás métricas en el sistema.')}</li>
-                    </ol>
+                    % if rec_nav_dict.get('subtitulo'):
+                        <p>${rec_nav_dict.get('subtitulo', '')}</p>
+                    % endif
                     
-                    <p>${_('¿De qué manera te ayudaría diseñar organizadores gráficos para conectar las distintas unidades y consolidar lo aprendido? Integrar transversalmente los contenidos y reflexionar sobre tu meta profesional le dará mayor firmeza y propósito a tu rendimiento.')}</p>
-                </div>
+                    % if rec_nav_dict.get('pasos'):
+                        <ol>
+                        % for paso in rec_nav_dict.get('pasos', []):
+                            <li>${paso}</li>
+                        % endfor
+                        </ol>
+                    % endif
+                    
+                    % if rec_nav_dict.get('cierre'):
+                        <p>${rec_nav_dict.get('cierre', '')}</p>
+                    % endif
+                    
+                </div>    
             </div>
-            <button class="recommendation-toggle-btn" id="rec-toggle-btn" onclick="toggleRecommendationText()">Ver más</button>
+            <button class="recommendation-toggle-btn" id="rec-toggle-btn" onclick="toggleRecommendationText()">${_('Ver más')}</button>
         </div>
     </div>
+    % endif
 </section>
