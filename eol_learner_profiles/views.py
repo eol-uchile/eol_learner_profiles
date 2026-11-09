@@ -8,6 +8,7 @@ from django.http import Http404
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.urls import reverse
+import random
 
 # Edx dependencies
 from lms.djangoapps.courseware.access import has_access
@@ -23,10 +24,7 @@ from .fetch_metrics import (
     get_api_problem_time,
     get_api_completion_progress,
     get_api_video_metrics,
-    get_api_engagement_metrics,
     check_api_availability,
-    get_local_dashboard_data,
-    get_local_metrics_data
 )
 
 logger = logging.getLogger(__name__)
@@ -82,6 +80,8 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
             comp_data_chapter = get_api_completion_progress(uid, course_id, group="chapter")
             vid_data = get_api_video_metrics(uid, course_id)
             prob_data_time = get_api_problem_time(uid, course_id)
+            evaluaciones_data = []
+
         else:
             
             mock_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'mock_api_data.json')
@@ -101,26 +101,37 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
                 comp_data_chapter = user_mock.get("completion_chapter", {})
                 vid_data = user_mock.get("videos", {})
                 prob_data_time = user_mock.get("problems_time", {})
+                evaluaciones_data = user_mock.get("evaluaciones", [])
                 
                 logger.warning("Datos json local: %s", user_name)
+
             except Exception as e:
                 logger.error("ERROR - Datos json local: %s", str(e))
                 nav_data_week = comp_data_week = nav_data_chapter = comp_data_chapter = vid_data = prob_data_time = {}
+                evaluaciones_data = []
 
         # Evaluaciones
-        course_grade = CourseGradeFactory().read(request.user, course)
-        evaluaciones_data = []
-        
-        for subsection in course_grade.subsection_grades.values():
-            if subsection.format: 
-                score_pct = (subsection.percent_graded * 100) if subsection.percent_graded else 0.0
-                evaluaciones_data.append({
-                    'name': subsection.display_name, 
-                    'eval_type': subsection.format,
-                    'score_user': round(score_pct, 1)
-                })
+        if not evaluaciones_data:
+            try:
+                course_grade = CourseGradeFactory().read(request.user, course)
+                for subsection in course_grade.subsection_grades.values():
+                    if subsection.format: 
+                        score_pct = (subsection.percent_graded * 100) if subsection.percent_graded else 0.0
 
-        # Calcular el promedio de las evaluaciones
+                        random.seed(subsection.display_name)
+                        median_dummy = round(random.uniform(60.0, 90.0), 1)
+                        random.seed()
+
+                        evaluaciones_data.append({
+                            'name': subsection.display_name, 
+                            'eval_type': subsection.format,
+                            'score_user': round(score_pct, 1),
+                            'score_median': median_dummy
+                        })
+            except Exception as e:
+                logger.error("Error al calcular notas nativas: %s", str(e)) 
+
+        # Calcula el promedio de las evaluaciones
         promedio_eval = 0
         if evaluaciones_data:
             suma_notas = sum(item['score_user'] for item in evaluaciones_data)
