@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 import six
@@ -53,7 +54,7 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
 
         # Flag uso API
         use_api_setting = getattr(settings, 'EOL_LEARNER_PROFILES_USE_API', True)
-        USE_API = str(use_api_setting).lower() == 'true'
+        USE_API = str(use_api_setting).lower() == 'false'
 
         if USE_API:
             check_api_availability()
@@ -65,7 +66,29 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
             vid_data = get_api_video_metrics(uid, course_id)
             prob_data_time = get_api_problem_time(uid, course_id)
         else:
-            nav_data_week = comp_data_week = nav_data_chapter = comp_data_chapter = vid_data = {}
+            
+            mock_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'mock_api_data.json')
+            try:
+                with open(mock_path, 'r', encoding='utf-8') as f:
+                    all_mock_data = json.load(f)
+                
+                user_mock = all_mock_data.get(str(user_name), {}) # trata de traer datos del usuario
+
+                if not user_mock and all_mock_data:
+                    first_user = list(all_mock_data.keys())[0]
+                    user_mock = all_mock_data[first_user]
+                
+                nav_data_week = user_mock.get("navigation_week", {})
+                comp_data_week = user_mock.get("completion_week", {})
+                nav_data_chapter = user_mock.get("navigation_chapter", {})
+                comp_data_chapter = user_mock.get("completion_chapter", {})
+                vid_data = user_mock.get("videos", {})
+                prob_data_time = user_mock.get("problems_time", {})
+                
+                logger.warning("Datos json local: %s", user_name)
+            except Exception as e:
+                logger.error("ERROR - Datos json local: %s", str(e))
+                nav_data_week = comp_data_week = nav_data_chapter = comp_data_chapter = vid_data = prob_data_time = {}
 
         # Evaluaciones
         course_grade = CourseGradeFactory().read(request.user, course)
@@ -88,33 +111,26 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
 
         # Resumen
         tiempo_minutos = round(float(nav_data_week.get("total_time", 0)) / 60) if nav_data_week.get("total_time") else 0
-        
+
         metricas_data = [
             {
                 "key": "tiempo",
-                "label": "Tiempo total",
-                "value": f"{tiempo_minutos}M",
-                "tooltip": "Tiempo total de navegación (en minutos)."
+                "value": tiempo_minutos
             },
             {
                 "key": "contenido",
-                "label": "Contenido Completado",
-                "value": comp_data_week.get("total_progress", 0),
-                "unit": "%"
+                "value": comp_data_week.get("total_progress", 0)
             },
             {
                 "key": "evaluaciones",
-                "label": "Promedio Evaluaciones",
-                "value": promedio_eval,
-                "unit": "%",
-                "tooltip": "Promedio de tus calificaciones en el curso."
+                "value": promedio_eval
             },
             {
                 "key": "videos",
-                "label": "Videos",
                 "value": f"{vid_data.get('individual_video_count', 0)}/{vid_data.get('total_video_count', 0)}"
-            },      
+            }
         ]
+        
 
         context = {
             "course": course,

@@ -37,6 +37,29 @@
     window.videosData = ${videos_json if videos_json else '{}' | n};
 
     window.problemsTimeData = ${problems_time_json if problems_time_json else '{}' | n};
+
+    window.resumenConfig = {
+        "tiempo": {
+            label: "${_('Tiempo total')}",
+            unit: "M",
+            tooltip: "${_('Tiempo total de navegación registrado en el curso.')}"
+        },
+        "contenido": {
+            label: "${_('Contenido Completado')}",
+            unit: "%",
+            tooltip: "${_('Porcentaje del contenido del curso completado.')}"
+        },
+        "evaluaciones": {
+            label: "${_('Promedio de Evaluaciones')}",
+            unit: "%",
+            tooltip: "${_('Promedio de las evaluaciones rendidas.')}"
+        },
+        "videos": {
+            label: "${_('Videos')}",
+            unit: "",
+            tooltip: "${_('Cantidad de videos visualizados.')}"
+        }
+    };
 </script>
 
 

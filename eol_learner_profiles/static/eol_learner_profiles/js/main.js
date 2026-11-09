@@ -31,21 +31,29 @@ function setupToggles(d3) {
 function renderMetricsBar(metricas) {
     var container = document.getElementById('srl-metrics-bar');
     if (!container || !metricas || metricas.length === 0) return;
+    var configData = window.resumenConfig || {};
 
     var htmlItems = '';
     var htmlTooltips = '';
 
     metricas.forEach(function(metric) {
-        htmlItems += '<div class="metric-item"><span class="metric-value">' + metric.value + (metric.unit || '') + '</span><div class="metric-details"><span class="metric-label">' + metric.label + '</span></div></div>';
-        if (metric.tooltip) {
-            htmlTooltips += '<li><strong>' + metric.label + ':</strong> ' + metric.tooltip + '</li>';
+        var config = configData[metric.key] || { label: metric.key, unit: '', tooltip: '' };
+        
+        htmlItems += '<div class="metric-item"><span class="metric-value">' + metric.value + config.unit + '</span><div class="metric-details"><span class="metric-label">' + config.label + '</span></div></div>';
+        
+        if (config.tooltip) {
+            htmlTooltips += '<li><strong>' + config.label + ':</strong> ' + config.tooltip + '</li>';
         }
     });
 
-    container.innerHTML = htmlItems + 
-        '<div class="metrics-info-container"><button class="tooltip-trigger" aria-label="Información sobre las métricas">ⓘ</button>' +
+    var tooltipHtml = '';
+    if (htmlTooltips !== '') {
+        tooltipHtml = '<div class="metrics-info-container"><button class="tooltip-trigger" aria-label="Información sobre las métricas">ⓘ</button>' +
         '<div class="tooltip-box" role="tooltip"><strong>Información de métricas:</strong><ul class="metrics-info-list">' + 
         htmlTooltips + '</ul></div></div>';
+    }
+
+    container.innerHTML = htmlItems + tooltipHtml;
 }
 
 // Resumen
