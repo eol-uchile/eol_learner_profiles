@@ -46,6 +46,45 @@ def get_recommendation(vid_data, nav_data, eval_data):
                 logger.error("Error leyendo recomendaciones.json: %s", str(e))
                 return None
 
+def get_evaluation_grades(user, course, user_name, use_api):
+    evaluaciones_data = []
+    if not use_api:
+        mock_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'mock_api_data.json')
+        try:
+            with open(mock_path, 'r', encoding='utf-8') as f:
+                all_mock_data = json.load(f)
+            
+            user_mock = all_mock_data.get(str(user_name), {})
+            if not user_mock and all_mock_data:
+                first_user = list(all_mock_data.keys())[0]
+                user_mock = all_mock_data[first_user]
+            
+            evaluaciones_data = user_mock.get("evaluaciones", [])
+        except Exception as e:
+            logger.error("Error leyendo evaluaciones desde json: %s", str(e))
+
+    if not evaluaciones_data:
+        try:
+            import random
+            course_grade = CourseGradeFactory().read(user, course)
+            for subsection in course_grade.subsection_grades.values():
+                if subsection.format: 
+                    score_pct = (subsection.percent_graded * 100) if subsection.percent_graded else 0.0
+                    
+                    random.seed(subsection.display_name)
+                    mediana_inventada = round(random.uniform(60.0, 90.0), 1)
+                    random.seed()
+
+                    evaluaciones_data.append({
+                        'name': subsection.display_name, 
+                        'eval_type': subsection.format,
+                        'score_user': round(score_pct, 1),
+                        'score_median': mediana_inventada
+                    })
+        except Exception as e:
+            logger.error("Error al calcular notas nativas: %s", str(e))
+    return evaluaciones_data
+
 class EolLearnerProfileFragmentView(EdxFragmentView):
     def render_to_fragment(self, request, course_id, **kwargs):
         course_key = CourseKey.from_string(course_id)
@@ -69,7 +108,7 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
 
         # Flag uso API
         use_api_setting = getattr(settings, 'EOL_LEARNER_PROFILES_USE_API', True)
-        USE_API = str(use_api_setting).lower() == 'false'
+        USE_API = str(use_api_setting).lower() == 'true'
 
         if USE_API:
             check_api_availability()
@@ -115,25 +154,7 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
                 evaluaciones_data = []
 
         # Evaluaciones
-        if not evaluaciones_data:
-            try:
-                course_grade = CourseGradeFactory().read(request.user, course)
-                for subsection in course_grade.subsection_grades.values():
-                    if subsection.format: 
-                        score_pct = (subsection.percent_graded * 100) if subsection.percent_graded else 0.0
-
-                        random.seed(subsection.display_name)
-                        median_dummy = round(random.uniform(60.0, 90.0), 1)
-                        random.seed()
-
-                        evaluaciones_data.append({
-                            'name': subsection.display_name, 
-                            'eval_type': subsection.format,
-                            'score_user': round(score_pct, 1),
-                            'score_median': median_dummy
-                        })
-            except Exception as e:
-                logger.error("Error al calcular notas nativas: %s", str(e)) 
+        evaluaciones_data = get_evaluation_grades(request.user, course, user_name, USE_API)
 
         # Calcula el promedio de las evaluaciones
         promedio_eval = 0
