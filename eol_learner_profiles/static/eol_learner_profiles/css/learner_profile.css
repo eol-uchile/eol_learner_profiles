@@ -124,7 +124,7 @@ html { scroll-behavior: smooth; }
 /* ==========================================
     3. graficos y leyendas de graficos
     ========================================== */
-.srl-charts-wrapper { display: flex; flex-direction: column; gap: 48px; margin-top: 32px; margin-bottom: 32px; }
+.srl-charts-wrapper { display: flex; flex-direction: column; gap: 24px; margin-top: 32px; margin-bottom: 32px; }
 .srl-charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--srl-gap); }
 
 .chart-panel { background: #fff; border: 1px solid var(--srl-border); border-radius: var(--srl-radius); padding: 1.25em 1.5em 1.5em; min-width: 0; }
@@ -135,7 +135,7 @@ html { scroll-behavior: smooth; }
 .chart-panel .chart-header > div:first-child { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 4px; }
 .chart-panel .chart-title { display: flex; align-items: center; margin: 0; font-size: 1.1em; letter-spacing: 0.03em; line-height: 1.2; }
 .chart-panel .chart-header.chart-header-secondary {
-    margin-top: 3em;
+    margin-top: 1.5em;
 }
 
 .chart-legend { display: flex; align-items: center; justify-content: flex-start; flex-wrap: wrap; gap: 16px; margin: 4px 0 0 0; padding: 0; width: 100%; font-size: 0.85em; color: #555; }
@@ -154,7 +154,7 @@ html { scroll-behavior: smooth; }
 .legend-tu-pink { background: var(--tu-pink); } 
 .legend-media { background: var(--media-dark); }
 
-.chart-scroll-wrap { position: relative; height: auto; min-height: 340px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
+.chart-scroll-wrap { position: relative; height: auto; min-height: 50px; overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
 .chart-panel canvas { max-height: 340px; }
 
 .chart-scroll-wrapper { width: 100%; overflow-x: auto; overflow-y: hidden; padding-bottom: 12px; box-shadow: inset -15px 0 15px -15px rgba(0,0,0,0.1); }
@@ -203,7 +203,7 @@ html { scroll-behavior: smooth; }
 /* ==========================================
     4. Gráfico tipo acordeon de videos
     ========================================== */
-.videos-accordion-wrapper { margin-top: 20px; border: 1px solid #d9d9d9; border-radius: 4px; background: #f9f9f9; max-height: 380px; overflow-y: auto; }
+.videos-accordion-wrapper { margin-top: 20px; margin-bottom: 24px; border: 1px solid #d9d9d9; border-radius: 4px; background: #f9f9f9; max-height: 380px; overflow-y: auto; }
 .video-module-details { border-bottom: 1px solid #d9d9d9; }
 .video-module-details:last-child { border-bottom: none; }
 .video-module-summary { display: flex; align-items: center; padding: 15px 20px; cursor: pointer; list-style: none; background-color: #f2f2f2; transition: background-color 0.2s; }
@@ -216,6 +216,7 @@ html { scroll-behavior: smooth; }
 .video-title { flex: 0 0 200px; font-size: 14px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .video-meta { flex: 0 0 160px; text-align: right; font-size: 12px; color: #888; }
 .video-bar-wrapper { flex: 1; margin: 0 20px; display: flex; flex-direction: column; }
+.video-item-row .video-bar-wrapper { margin-right: 180px; }
 .video-bar-bg { width: 100%; height: 32px; background-color: #fff; border: 1px solid #ccc; position: relative; }
 .video-bar-fill { height: 100%; background-color: var(--tu-orange); }
 .video-item-row .video-bar-fill { background-color: #f4cc70; }
@@ -236,7 +237,7 @@ html { scroll-behavior: smooth; }
 .rec-category { font-size: 0.7em; font-weight: 700; text-transform: uppercase; background: #f0f4f8; color: var(--srl-color-primary); padding: 0.2em 0.6em; border-radius: 12px; white-space: nowrap; }
 .recommendation-card p { margin: 0; font-size: 0.88em; color: #555; line-height: 1.45; }
 
-.navigation-recommendation-box { margin-top: 25px; padding: 16px 20px; background-color: #f8f9fa; border: 1px solid #e1e1e1; border-radius: 6px; font-size: 14px; color: #333; line-height: 1.5; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+.navigation-recommendation-box { margin-top: 12px; padding: 16px 20px; background-color: #f8f9fa; border: 1px solid #e1e1e1; border-radius: 6px; font-size: 14px; color: #333; line-height: 1.5; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 .recommendation-header { font-weight: bold; margin-bottom: 8px; color: #2c3e50; display: flex; align-items: center; }
 .recommendation-content { overflow: hidden; transition: max-height 0.3s ease-in-out; }
 .recommendation-content.collapsed { max-height: 26px; position: relative; }

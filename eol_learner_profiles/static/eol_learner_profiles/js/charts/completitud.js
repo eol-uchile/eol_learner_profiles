@@ -25,8 +25,8 @@ export function renderChart(d3, chartType, view) {
         };
     });
 
-    var margin = { top: 20, right: 20, bottom: view === 'chapter' ? 80 : 60, left: 60 };
-    var height = 200;
+    var margin = { top: 20, right: 20, bottom: view === 'chapter' ? 40 : 40, left: 60 };
+    var height = 180;
     var parentWidth = container.parentElement.clientWidth || 800;
     var idealMinWidth = (view === 'chapter') ? data.length * 60 : data.length * 80;
     var containerWidth = Math.max(parentWidth, idealMinWidth);
@@ -53,8 +53,7 @@ export function renderChart(d3, chartType, view) {
         .call(d3.axisLeft(y).ticks(5).tickSize(-width).tickFormat(''))
         .selectAll('line').style('stroke', '#eef2f5').style('stroke-opacity', '0.7');
     chart.selectAll('.grid path').style('stroke-width', '0');
-    chart.append('g').attr('class', 'chart-axis').call(d3.axisLeft(y).ticks(5).tickFormat(function (d) { return isCompletitud ? d : d.toFixed(1); }));
-
+    chart.append('g').attr('class', 'chart-axis').call(d3.axisLeft(y).ticks(5).tickFormat(function (d) { return isCompletitud ? d : Math.round(d); }));
     var xAxis = chart.append('g').attr('class', 'chart-axis')
         .attr('transform', 'translate(0,' + height + ')')
         .call(d3.axisBottom(x).tickFormat(function(label) {

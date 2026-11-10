@@ -38,7 +38,7 @@ export function renderEvaluacionesChart(d3, view) {
         });
     }
 
-    var margin = { top: 20, right: 20, bottom: 80, left: 60 }; 
+    var margin = { top: 20, right: 20, bottom: 40, left: 60 }; 
     var height = 220; 
     var totalSvgHeight = height + margin.top + margin.bottom;
     
