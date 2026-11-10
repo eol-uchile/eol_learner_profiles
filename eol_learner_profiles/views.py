@@ -46,24 +46,29 @@ def get_recommendation(vid_data, nav_data, eval_data):
                 logger.error("Error leyendo recomendaciones.json: %s", str(e))
                 return None
 
-def get_evaluation_grades(user, course, user_name, use_api):
+def get_evaluation_grades(user, course, user_name, use_mock_evals):
     evaluaciones_data = []
-    if not use_api:
-        mock_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'mock_api_data.json')
+    if use_mock_evals:
+        mock_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data', 'evaluaciones.json')
         try:
             with open(mock_path, 'r', encoding='utf-8') as f:
                 all_mock_data = json.load(f)
             
             user_mock = all_mock_data.get(str(user_name), {})
-            if not user_mock and all_mock_data:
-                first_user = list(all_mock_data.keys())[0]
-                user_mock = all_mock_data[first_user]
-            
-            evaluaciones_data = user_mock.get("evaluaciones", [])
+
+            for eval_type, evaluaciones in user_mock.items():
+                for eval_item in evaluaciones:
+                    evaluaciones_data.append({
+                        'name': eval_item.get('name', 'Evaluación'),
+                        'eval_type': eval_type,
+                        'score_user': eval_item.get('score_user', 0),
+                        'score_median': eval_item.get('score_median', 0)
+                    })
+
         except Exception as e:
             logger.error("Error leyendo evaluaciones desde json: %s", str(e))
 
-    if not evaluaciones_data:
+    else:
         try:
             import random
             course_grade = CourseGradeFactory().read(user, course)
@@ -108,7 +113,11 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
 
         # Flag uso API
         use_api_setting = getattr(settings, 'EOL_LEARNER_PROFILES_USE_API', True)
-        USE_API = str(use_api_setting).lower() == 'true'
+        USE_API = str(use_api_setting).lower() == 'false'
+
+        # Flag uso evaluaciones mock
+        use_mock_evals_setting = getattr(settings, 'EOL_LEARNER_PROFILES_MOCK_EVALS', True)
+        USE_MOCK_EVALS = str(use_mock_evals_setting).lower() == 'true'
 
         if USE_API:
             check_api_availability()
@@ -154,7 +163,7 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
                 evaluaciones_data = []
 
         # Evaluaciones
-        evaluaciones_data = get_evaluation_grades(request.user, course, user_name, USE_API)
+        evaluaciones_data = get_evaluation_grades(request.user, course, user_name, USE_MOCK_EVALS)
 
         # Calcula el promedio de las evaluaciones
         promedio_eval = 0
