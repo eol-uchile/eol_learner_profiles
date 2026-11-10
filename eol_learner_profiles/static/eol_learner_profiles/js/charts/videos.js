@@ -4,7 +4,16 @@ export function renderVideosChart() {
     var container = document.getElementById('videos-accordion-container');
     if (!container) return;
 
-    var rawVideos = (window.videosData && window.videosData.grouped_data) ? window.videosData.grouped_data : [];
+    var rawVideos = [];
+    if (window.videosData && window.videosData.grouped_data && window.videosData.grouped_data.length > 0) {
+            // Datos API
+        if (window.videosData.grouped_data[0].chapters) {
+            rawVideos = window.videosData.grouped_data[0].chapters;
+        } else {
+            // Datos json
+            rawVideos = window.videosData.grouped_data;
+        }
+    }
 
     if(!rawVideos || rawVideos.length === 0) {
         return;
@@ -17,9 +26,7 @@ export function renderVideosChart() {
         var isOpen = index === 0 ? 'open' : '';
         
         // --- DATOS DEL MÓDULO (Desplegable general) ---
-        // Leemos average_visualization_rate o visualization_rate (según lo que mande la API)
         var valUser = Math.min(Math.max(modulo.average_visualization_rate || modulo.visualization_rate || 0, 0), 100);
-        // La API aún no manda la mediana a nivel de módulo, se mantiene en 0 por ahora
         var valMedia = Math.min(Math.max(modulo.visualization_rate_median || 0, 0), 100); 
         
         var timeUserStr = formatTime(modulo.sum_interaction_time || 0);
@@ -37,7 +44,6 @@ export function renderVideosChart() {
 
         htmlString += '  <div class="video-bar-bg tooltip-target" ' + tooltipAttr + '>';
         htmlString += '    <div class="video-bar-fill" style="width: ' + valUser + '%;"></div>';
-        // Solo dibujamos la marca si hay mediana mayor a 0 (para que no ensucie si la API no la manda)
         if (valMedia > 0) {
             htmlString += '    <div class="video-median-marker" style="left: ' + valMedia + '%;"></div>';
         }

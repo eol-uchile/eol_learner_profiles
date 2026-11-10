@@ -73,6 +73,10 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
 
         if USE_API:
             check_api_availability()
+
+            # Descomentar para forzar uso de user_id + curso real de la api
+            # uid = ...
+            # course_id = "..."
             
             nav_data_week = get_api_navigation_time(uid, course_id, group="week")
             comp_data_week = get_api_completion_progress(uid, course_id, group="week")
