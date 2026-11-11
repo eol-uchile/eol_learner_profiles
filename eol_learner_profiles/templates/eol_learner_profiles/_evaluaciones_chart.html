@@ -1,0 +1,69 @@
+## mako
+<%! from django.utils.translation import ugettext as _ %>
+<section class="chart-panel" id="panel-evaluaciones">
+    <div class="chart-header">
+        <div>
+            <h3 class="chart-title">
+                ${_('EVALUACIONES')}
+                <div class="chart-info-container">
+                    <button class="tooltip-trigger" aria-label="${_('Información')}">ⓘ</button>
+                    <div class="tooltip-box" role="tooltip">
+                        ${_('Calificación obtenida y tiempo registrado para completar cada evaluación, comparados con la mediana de los participantes del curso.')}
+                    </div>
+                </div>
+            </h3>
+            <div class="chart-legend">
+                <span class="legend-item">
+                    <i class="legend-bar legend-tu-pink"></i>
+                    ${_('TÚ')}
+                </span>
+                <span class="legend-item">
+                    <i class="legend-marker legend-media"></i>
+                    ${_('MEDIANA DEL CURSO')}
+                </span>
+            </div>
+        </div>
+        <div class="chart-toggle view-toggle-evaluaciones">
+            <button type="button" class="toggle-btn active" data-view="calificaciones" data-target="evaluaciones">${_('CALIFICACIONES')}</button>
+            <button type="button" class="toggle-btn" data-view="tiempo" data-target="evaluaciones">${_('TIEMPO')}</button>
+        </div>
+    </div>
+
+    <div class="chart-scroll-wrap" id="evaluaciones-chart-wrapper">
+        <div id="evaluaciones-chart"></div>
+    </div>
+    
+    % if rec_eval_dict:
+    <div id="eval-recommendation" class="navigation-recommendation-wrapper">
+        <div class="navigation-recommendation-box">
+            <div class="recommendation-header">
+                💡 ${_('Recomendación')}
+            </div>
+            <div class="recommendation-content collapsed" id="rec-eval-content">
+                <div class="recommendation-text" id="rec-eval-text-content">
+                    
+                    <p>${rec_eval_dict.get('introduccion', '')}</p>
+                    
+                    % if rec_eval_dict.get('subtitulo'):
+                        <p>${rec_eval_dict.get('subtitulo', '')}</p>
+                    % endif
+                    
+                    % if rec_eval_dict.get('pasos'):
+                        <ol>
+                        % for paso in rec_eval_dict.get('pasos', []):
+                            <li>${paso}</li>
+                        % endfor
+                        </ol>
+                    % endif
+                    
+                    % if rec_eval_dict.get('cierre'):
+                        <p>${rec_eval_dict.get('cierre', '')}</p>
+                    % endif
+                    
+                </div>    
+            </div>
+            <button class="recommendation-toggle-btn" id="rec-eval-toggle-btn" onclick="toggleEvalRecommendationText()">${_('Ver más')}</button>
+        </div>
+    </div>
+    % endif
+</section>

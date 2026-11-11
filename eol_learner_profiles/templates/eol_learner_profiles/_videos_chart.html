@@ -1,0 +1,65 @@
+## mako
+<%! from django.utils.translation import ugettext as _ %>
+<section class="chart-panel" id="panel-videos">
+    <div class="chart-header">
+        <div>
+            <h3 class="chart-title">
+                ${_('VISUALIZACIÓN DE VIDEOS')}
+                <div class="chart-info-container">
+                    <button class="tooltip-trigger" aria-label="${_('Información')}">ⓘ</button>
+                    <div class="tooltip-box" role="tooltip">
+                        ${_('Porcentaje visualizado de cada video comparado con la mediana de los participantes del curso. También se indica la cantidad de interacciones registradas en cada video.')}
+                    </div>
+                </div>
+            </h3>
+            <div class="chart-legend">
+                <span class="legend-item">
+                    <i class="legend-bar legend-tu-orange"></i>
+                    ${_('TÚ')}
+                </span>
+                <span class="legend-item">
+                    <i class="legend-marker legend-media"></i>
+                    ${_('MEDIANA DEL CURSO')}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="videos-accordion-wrapper" id="videos-accordion-container">
+        <!-- "grafico" tipo acordeon -->
+    </div>
+    
+    % if rec_videos_dict:
+    <div id="videos-recommendation" class="navigation-recommendation-wrapper">
+        <div class="navigation-recommendation-box">
+            <div class="recommendation-header">
+                💡 ${_('Recomendación')}
+            </div>
+            <div class="recommendation-content collapsed" id="rec-videos-content">
+                <div class="recommendation-text" id="rec-videos-text-content">
+                    
+                    <p>${rec_videos_dict.get('introduccion', '')}</p>
+                    
+                    % if rec_videos_dict.get('subtitulo'):
+                        <p>${rec_videos_dict.get('subtitulo', '')}</p>
+                    % endif
+                    
+                    % if rec_videos_dict.get('pasos'):
+                        <ol>
+                        % for paso in rec_videos_dict.get('pasos', []):
+                            <li>${paso}</li>
+                        % endfor
+                        </ol>
+                    % endif
+                    
+                    % if rec_videos_dict.get('cierre'):
+                        <p>${rec_videos_dict.get('cierre', '')}</p>
+                    % endif
+                    
+                </div>    
+            </div>
+            <button class="recommendation-toggle-btn" id="rec-videos-toggle-btn" onclick="toggleVideosRecommendationText()">${_('Ver más')}</button>
+        </div>
+    </div>
+    % endif
+</section>
