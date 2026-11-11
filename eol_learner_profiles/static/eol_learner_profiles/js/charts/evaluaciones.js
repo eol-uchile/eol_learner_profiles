@@ -24,16 +24,22 @@ export function renderEvaluacionesChart(d3, view) {
         if (!rawProblems.length) {
             return;
         }
+        var contadoresTipo = {};
         activeData = rawProblems.map(function(d, i) {
+            var letra = d.eval_type ? d.eval_type.charAt(0).toUpperCase() : 'P';
+            if (!contadoresTipo[letra]) contadoresTipo[letra] = 0;
+            contadoresTipo[letra]++;
+            
             return {
-                name: 'Problema ' + (i + 1),
-                short_label: 'P' + (i + 1),
+                name: d.display_name || ('Evaluación ' + (i + 1)), 
+                short_label: letra + contadoresTipo[letra], 
                 time_user: (d.individual_time || 0) / 60,
                 median: (d.median_time || 0) / 60,
                 q1: (d.p33_time || 0) / 60,
                 q3: (d.p66_time || 0) / 60,
                 min: (d.min_time || 0) / 60, 
-                max: (d.max_time || 0) / 60
+                max: (d.max_time || 0) / 60,
+                eval_type: d.eval_type 
             };
         });
     }
@@ -74,7 +80,7 @@ export function renderEvaluacionesChart(d3, view) {
     chart.append('text').attr('transform', 'rotate(-90)').attr('y', -margin.left + 15).attr('x', -height / 2).attr('dy', '1em').style('text-anchor', 'middle').style('font-size', '11px').style('fill', '#666').text(yAxisLabel);
 
     function getEvalTooltipHtml(d) {
-        var label = view === 'calificaciones' ? ((d.eval_type ? d.eval_type + ': ' : '') + d.name) : d.name;
+        var label = (d.eval_type ? d.eval_type + ': ' : '') + d.name; 
         var valTu = view === 'calificaciones' ? d.score_user + '%' : d.time_user.toFixed(1) + ' min';
         var valMedia = view === 'calificaciones' ? (d.score_median || 0) + '%' : (d.median || 0).toFixed(1) + ' min';
         return '<strong>' + label + '</strong><br>Tú: ' + valTu + '<br>Mediana del curso: ' + valMedia;

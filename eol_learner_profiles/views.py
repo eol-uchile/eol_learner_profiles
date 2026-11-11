@@ -19,6 +19,9 @@ from openedx.core.djangoapps.plugin_api.views import EdxFragmentView
 from web_fragments.fragment import Fragment
 from lms.djangoapps.grades.course_grade_factory import CourseGradeFactory
 
+from xmodule.modulestore.django import modulestore
+from opaque_keys.edx.keys import UsageKey
+
 from .fetch_metrics import (
     get_api_navigation_time,
     get_api_problem_time,
@@ -113,7 +116,7 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
 
         # Flag uso API
         use_api_setting = getattr(settings, 'EOL_LEARNER_PROFILES_USE_API', True)
-        USE_API = str(use_api_setting).lower() == 'false'
+        USE_API = str(use_api_setting).lower() == 'true'
 
         # Flag uso evaluaciones mock
         use_mock_evals_setting = getattr(settings, 'EOL_LEARNER_PROFILES_MOCK_EVALS', True)
@@ -161,6 +164,33 @@ class EolLearnerProfileFragmentView(EdxFragmentView):
                 logger.error("ERROR - Datos json local: %s", str(e))
                 nav_data_week = comp_data_week = nav_data_chapter = comp_data_chapter = vid_data = prob_data_time = {}
                 evaluaciones_data = []
+
+        # Nombres de evaluaciones (vista tiempo)
+        if prob_data_time and "grouped_data" in prob_data_time:
+            store = modulestore()
+            for item in prob_data_time["grouped_data"]:
+                block_id_str = item.get("block_id")
+                if block_id_str:
+                    try:
+                        usage_key = UsageKey.from_string(block_id_str)
+                        
+                        block_item = store.get_item(usage_key)
+                        
+                        if block_item:
+                            fallback_name = "Evaluación " + str(item["block_id"])[-4:]
+                            item["display_name"] = block_item.display_name or fallback_name
+                            
+                            if hasattr(block_item, 'format') and block_item.format:
+                                item["eval_type"] = block_item.format
+                            else:
+                                item["eval_type"] = "Tipo evaluación"
+                        else:
+                             item["display_name"] = "Evaluación " + str(item["block_id"])[-4:]
+                             item["eval_type"] = "Tipo evaluación"
+                             
+                    except Exception as e:
+                        item["display_name"] = "Evaluación " + str(block_id_str)[-4:]
+                        item["eval_type"] = "Tipo evaluación"
 
         # Evaluaciones
         evaluaciones_data = get_evaluation_grades(request.user, course, user_name, USE_MOCK_EVALS)
