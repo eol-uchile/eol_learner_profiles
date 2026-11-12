@@ -3,7 +3,7 @@
 .eol-lp {
     max-width: 1920px;
     margin: 0 auto;
-    padding: 1rem;
+    padding: 0rem;
 }
 
 /* --- Encabezado de la pestaña ------------------------------------------- */
@@ -226,6 +226,14 @@
     opacity: 0.9;
 }
 
+.eol-lp-survey-nav button.btn:hover {
+    border-color: var(--srl-color-primary) !important;
+    background: var(--srl-color-primary) !important;
+    box-shadow: none;
+    color: white;
+}
+
+
 /* --- Modal de configuración -------------------------------------- */
 .eol-lp-modal {
     display: none;
@@ -293,4 +301,3 @@
     border: none;
     border-top: 1px solid #e6e6e6;
 }
-

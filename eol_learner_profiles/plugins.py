@@ -13,8 +13,8 @@ class EolLearnerProfileTab(TabFragmentViewMixin, EnrolledTab):
     priority = None
     view_name = 'learner_profile_view'
     fragment_view_name = 'eol_learner_profiles.views.EolLearnerProfileFragmentView'
-    is_hideable = False
-    is_default = True
+    is_hideable = True
+    is_default = False
     body_class = 'eol_learner_profiles'
     online_help_token = 'eol_learner_profiles'
     # True if this tab should be displayed only for instructors
