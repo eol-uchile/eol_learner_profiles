@@ -34,9 +34,6 @@
             if (next) { next.hidden = last || pages.length <= 1; }
             if (submit) { submit.hidden = !last && pages.length > 1; }
             if (curLabel) { curLabel.textContent = String(idx + 1); }
-            if (card && card.scrollIntoView) {
-                card.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
         }
 
         if (prev) { prev.addEventListener("click", function () { show(idx - 1); }); }
@@ -72,13 +69,19 @@
         var card = document.getElementById("eol-lp-survey");
         var toggle = card && card.querySelector(".eol-lp-survey-toggle");
         var body = document.getElementById("eol-lp-survey-body");
-        if (!card || !toggle || !body) { return; }
-
-        toggle.addEventListener("click", function () {
-            var collapsed = card.classList.toggle("is-collapsed");
+        if (!card || !body) { return; }
+        function setCollapsed(collapsed) {
+            card.classList.toggle("is-collapsed", collapsed);
+            body.style.display = collapsed ? "none" : "";
             body.hidden = collapsed;
-            toggle.setAttribute("aria-expanded", String(!collapsed));
-        });
+            if (toggle) { toggle.setAttribute("aria-expanded", String(!collapsed)); }
+        }
+        setCollapsed(true);
+        if (toggle) {
+            toggle.addEventListener("click", function () {
+                setCollapsed(!card.classList.contains("is-collapsed"));
+            });
+        }
     }
 
     /* ---- modal de configuración (staff) --------------------------- */
