@@ -86,14 +86,12 @@ def _is_selected(answers, qid, value):
             </p>
             % endif
         </div>
-        % if survey_completed:
         <button type="button" class="btn btn-link eol-lp-survey-toggle"
                 aria-expanded="${'false' if survey_collapsed else 'true'}"
                 aria-controls="eol-lp-survey-body">
-            <span class="eol-lp-toggle-open">Ver / responder de nuevo</span>
+            <span class="eol-lp-toggle-open">${'Ver / responder de nuevo' if survey_completed else 'Responder encuesta'}</span>
             <span class="eol-lp-toggle-close">Ocultar</span>
         </button>
-        % endif
     </div>
 
     <div class="eol-lp-survey-body" id="eol-lp-survey-body" ${'hidden' if survey_collapsed else ''}>
