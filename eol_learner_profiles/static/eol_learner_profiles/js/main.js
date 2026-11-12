@@ -56,14 +56,25 @@ function renderMetricsBar(metricas) {
     container.innerHTML = htmlItems + tooltipHtml;
 }
 
+function loadScript(src) {
+    return new Promise(function (resolve, reject) {
+        var s = document.createElement('script');
+        s.src = src;
+        s.async = true;
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+    });
+}
+
 // Resumen
 if (typeof window.metricasData !== 'undefined') {
     renderMetricsBar(window.metricasData);
 }
 
 // Gráficos
-import('https://cdn.jsdelivr.net/npm/d3@7/+esm').then(function (d3Module) {
-    globalD3 = d3Module;
+loadScript('https://cdn.jsdelivr.net/npm/d3@7.9/dist/d3.min.js').then(function () {
+    globalD3 = window.d3;
     renderChart(globalD3, 'completitud', currentCompletitudView);
     renderChart(globalD3, 'navigation', currentNavigationView);
     renderEvaluacionesChart(globalD3, currentEvaluacionesView);
