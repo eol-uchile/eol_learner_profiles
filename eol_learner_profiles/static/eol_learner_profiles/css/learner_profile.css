@@ -20,13 +20,11 @@
 1. Estilo base
     ========================================== */
 html { scroll-behavior: smooth; }
-.content-wrapper { padding: 0px; }
-.window-wrap { margin-top: -20px; }
-.wrapper-course-material .course-tabs { padding: 0 20px 10px; }
 
+/* El marco (pestañas y márgenes) lo pone el tema, igual que en las demás pestañas del curso. */
 #main {
     border: 1px solid #c8c8c8;
-    margin: -11px 20px 10px;
+    margin: 0 0 10px;
     padding: 2em; 
     background-color: #ffffff;
 }
