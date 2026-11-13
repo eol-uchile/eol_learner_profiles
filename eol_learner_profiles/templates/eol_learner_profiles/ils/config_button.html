@@ -1,0 +1,9 @@
+## mako
+## Parte ILS "config_button". La renderiza ``eol_learner_profiles.ils.display.render_ils``
+## con el contexto de ``ils_context``; la página la inserta como ``${ils['config_button']}``.
+% if is_staff:
+<button type="button" id="eol-lp-config-open" class="btn btn-default eol-lp-config-btn"
+        aria-haspopup="dialog" aria-controls="eol-lp-config-modal">
+    &#9881; Configuración
+</button>
+% endif

@@ -1,0 +1,56 @@
+## mako
+<%! from django.utils.translation import ugettext as _ %>
+<%! from django.urls import reverse %>
+<%namespace name='static' file='/static_content.html'/>
+<%inherit file="/main.html" />
+<%block name="pagetitle">${_("ILS Instruments")}</%block>
+<%block name="headextra">
+<link rel="stylesheet" type="text/css" href="${static.url('eol_learner_profiles/css/ils/ils_editor.css')}"/>
+</%block>
+
+<div class="ils-editor ils-editor-list">
+    <div class="ils-editor-topbar">
+        <h1>Instrumentos ILS - Administración Global</h1>
+        <a href="${create_url}" class="ils-btn">+ Crear Nueva Versión</a>
+    </div>
+
+    <table class="ils-editor-table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Versión</th>
+                <th>Estado</th>
+                <th>Última actualización</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            % for item in definitions:
+            <tr>
+                <td><strong>${item.name | h}</strong></td>
+                <td>v${item.version}</td>
+                <td>
+                    % if item.is_active:
+                    <span class="ils-badge ils-badge-active">Activa (en consumo)</span>
+                    % else:
+                    <span class="ils-badge ils-badge-inactive">Inactiva</span>
+                    % endif
+                </td>
+                <td>${item.updated_at.strftime('%d/%m/%Y %H:%M')}</td>
+                <td>
+                    <a href="${reverse('ils_editor_detail', kwargs={'pk': item.pk})}"
+                       class="ils-btn ils-btn-sm">Editar / Previsualizar</a>
+                </td>
+            </tr>
+            % endfor
+            % if not definitions:
+            <tr>
+                <td colspan="5">
+                    No hay instrumentos ILS creados aún.
+                    <a href="${create_url}">Crear el primero</a>.
+                </td>
+            </tr>
+            % endif
+        </tbody>
+    </table>
+</div>

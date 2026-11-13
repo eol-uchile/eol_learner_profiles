@@ -1,0 +1,159 @@
+## mako
+## Parte ILS "survey". La renderiza ``eol_learner_profiles.ils.display.render_ils``
+## con el contexto de ``ils_context``; la página la inserta como ``${ils['survey']}``.
+<%!
+def _is_selected(answers, qid, value):
+    current = (answers or {}).get(qid)
+    if current is None:
+        return False
+    if isinstance(current, (list, tuple)):
+        return value in current
+    return current == value
+%>
+
+<%def name="render_question(q, existing_answers, readonly=False)">
+    <% dis = 'disabled' if readonly else '' %>
+    % if q['type'] == 'likert_matrix':
+    <div class="ils-likert-wrap">
+        <table class="ils-likert-table">
+            <thead>
+                <tr>
+                    <th>Enunciado</th>
+                    % for scale_val in q['scale']:
+                    <th>${scale_val}</th>
+                    % endfor
+                </tr>
+            </thead>
+            <tbody>
+                % for row in q['rows']:
+                <tr>
+                    <td>${row['statement'] | h}</td>
+                    % for scale_val in q['scale']:
+                    <td>
+                        <input type="radio" name="${row['id']}" value="${scale_val}" ${dis}
+                            ${'checked' if _is_selected(existing_answers, row['id'], scale_val) else ''} />
+                    </td>
+                    % endfor
+                </tr>
+                % endfor
+            </tbody>
+        </table>
+    </div>
+    % else:
+    <div class="ils-question-block">
+        <p><strong>${q['text'] | h}</strong></p>
+        % for opt in q['options']:
+        <div class="ils-option">
+            <label>
+                <input type="${'checkbox' if q['type'] == 'checkbox' else 'radio'}"
+                    name="${q['id']}" value="${opt['text']}" ${dis}
+                    ${'checked' if _is_selected(existing_answers, q['id'], opt['text']) else ''} />
+                ${opt['text'] | h}
+            </label>
+            % if opt['has_other_text']:
+            <input type="text" name="${q['id']}_other" class="ils-other-input"
+                placeholder="Especificar..." ${dis}
+                value="${existing_answers.get(q['id'] + '_other', '') | h}" />
+            % endif
+        </div>
+        % endfor
+    </div>
+    % endif
+</%def>
+
+% if no_instrument:
+<section class="eol-lp-box">
+    <p>
+        <em>No hay un instrumento ILS activo en la plataforma.</em>
+        % if is_staff:
+        Crea o activa una versión en <a href="${ils_editor_url}">el editor de instrumentos ILS</a>
+        y luego selecciónala en <strong>Configuración</strong>.
+        % endif
+    </p>
+</section>
+% else:
+<section class="eol-lp-box eol-lp-survey-card ${'is-collapsed' if survey_collapsed else ''}"
+        id="eol-lp-survey">
+    <div class="eol-lp-survey-head">
+        <div>
+            <h3 class="hd hd-3">${ils_def.name | h}</h3>
+            % if survey_completed:
+            <p class="eol-lp-survey-status">
+                Encuesta respondida
+                % if response_source == 'imported':
+                - <small>reutilizada desde otro de tus cursos</small>
+                % endif
+            </p>
+            % endif
+        </div>
+        % if survey_completed:
+        <button type="button" class="btn btn-link eol-lp-survey-toggle"
+                aria-expanded="${'false' if survey_collapsed else 'true'}"
+                aria-controls="eol-lp-survey-body">
+            <span class="eol-lp-toggle-open">Ver / responder de nuevo</span>
+            <span class="eol-lp-toggle-close">Ocultar</span>
+        </button>
+        % endif
+    </div>
+
+    <div class="eol-lp-survey-body" id="eol-lp-survey-body" ${'hidden' if survey_collapsed else ''}>
+        % if survey_reason == 'retake_requested':
+        <p class="eol-lp-note eol-lp-note-warn">
+            El equipo del curso solicitó que respondas nuevamente la encuesta.
+        </p>
+        % elif survey_reason == 'require_new':
+        <p class="eol-lp-note">
+            Este curso requiere una respuesta propia, aunque hayas respondido en otro curso.
+        </p>
+        % endif
+
+        % if render_survey_form and parsed_survey:
+        <% pages = parsed_survey['pages'] %>
+        <form method="post" action="${submit_url}" id="eol-lp-survey-form" class="eol-lp-paged">
+            <input type="hidden" name="csrfmiddlewaretoken" value="${csrf_token}" />
+            <input type="hidden" name="next" value="${page_url | h}" />
+
+            % for page in pages:
+            <div class="eol-lp-survey-page" data-page="${page['number']}" ${'' if page['number'] == 1 else 'hidden'}>
+                % for block in page['blocks']:
+                    % if block['kind'] == 'section':
+                        <h4 class="ils-section-title">
+                            ${block['title'] | h}${' (continuación)' if block['continued'] else ''}
+                        </h4>
+                    % else:
+                        ${render_question(block['q'], existing_answers)}
+                    % endif
+                % endfor
+            </div>
+            % endfor
+
+            <div class="eol-lp-survey-nav">
+                <button type="button" class="btn btn-default eol-lp-nav-prev" hidden>&larr; Anterior</button>
+                <span class="eol-lp-nav-status">
+                    Página <span class="eol-lp-nav-cur">1</span> de
+                    <span class="eol-lp-nav-total">${len(pages)}</span>
+                </span>
+                <button type="button" class="btn btn-primary eol-lp-nav-next"
+                        ${'hidden' if len(pages) <= 1 else ''}>Siguiente &rarr;</button>
+                <button type="submit" class="btn btn-primary eol-lp-nav-submit"
+                        ${'' if len(pages) <= 1 else 'hidden'}>Enviar encuesta</button>
+            </div>
+
+            % if survey_completed:
+            <p class="eol-lp-survey-cancel"><a class="btn btn-link" href="${page_url}">Cancelar</a></p>
+            % endif
+        </form>
+        % elif survey_completed:
+        <div class="eol-lp-survey-review">
+            % for section in parsed_survey['sections']:
+            <h4 class="ils-section-title">${section['title'] | h}</h4>
+                % for q in section['questions']:
+                    ${render_question(q, existing_answers, readonly=True)}
+                % endfor
+            % endfor
+            <p><a class="btn btn-primary" href="${page_url}?retake=1">Responder de nuevo</a></p>
+        </div>
+        % endif
+    </div>
+</section>
+% endif

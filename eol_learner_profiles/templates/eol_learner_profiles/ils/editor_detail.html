@@ -1,0 +1,76 @@
+## mako
+<%! from django.utils.translation import ugettext as _ %>
+<%namespace name='static' file='/static_content.html'/>
+<%inherit file="/main.html" />
+<%block name="pagetitle">${_("ILS Instrument Editor")}</%block>
+<%block name="headextra">
+<link rel="stylesheet" type="text/css" href="${static.url('eol_learner_profiles/css/ils/ils_editor.css')}"/>
+</%block>
+
+<div class="ils-editor ils-editor-detail">
+    <form method="post" id="ils-editor-form">
+        <input type="hidden" name="csrfmiddlewaretoken" value="${csrf_token}"/>
+
+        <div class="ils-editor-topbar">
+            <div>
+                <a href="${list_url}" class="ils-editor-back">&larr; Volver al listado</a>
+                <h1>
+                    % if ils_def:
+                    Editando instrumento: ${ils_def.name | h} (v${ils_def.version})
+                    % else:
+                    Crear nuevo instrumento ILS
+                    % endif
+                </h1>
+            </div>
+            <div class="ils-editor-actions">
+                <button type="submit" name="action" value="update" class="ils-btn">Guardar cambios</button>
+                % if ils_def:
+                <button type="submit" name="action" value="new_version" class="ils-btn ils-btn-secondary">
+                    Guardar como nueva versión
+                </button>
+                % endif
+            </div>
+        </div>
+
+        % if error:
+        <div class="ils-editor-error">${error | h}</div>
+        % endif
+
+        <div class="ils-editor-panes">
+            <div class="ils-pane ils-pane-editor">
+                <div class="ils-form-group">
+                    <label for="name">Nombre del instrumento</label>
+                    <input type="text" id="name" name="name" required
+                           value="${(ils_def.name if ils_def else 'Encuesta de Patrones de Aprendizaje (ILS)') | h}"/>
+                </div>
+
+                <div class="ils-form-group ils-form-inline">
+                    <input type="checkbox" id="is_active" name="is_active" value="true"
+                           ${'checked' if (ils_def is None or ils_def.is_active) else ''}/>
+                    <label for="is_active">Establecer como versión activa para los cursos</label>
+                </div>
+
+                <div class="ils-form-group ils-form-grow">
+                    <label for="markdown_content">Contenido Markdown / DSL</label>
+                    <p class="ils-hint">
+                        Una línea que sólo contenga <code>[[page]]</code> corta la encuesta en
+                        páginas para el estudiante (se ven marcadas en la previsualización).
+                    </p>
+                    <textarea id="markdown_content" name="markdown_content">${default_markdown | h}</textarea>
+                </div>
+
+            </div>
+
+            <div class="ils-pane ils-pane-preview">
+                <h3>Previsualización en tiempo real</h3>
+                <div id="preview-container"
+                     data-preview-url="${preview_url}"
+                     data-csrf-token="${csrf_token}">
+                    <p>Escribe en el panel izquierdo para ver la previsualización del instrumento.</p>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <script src="${static.url('eol_learner_profiles/js/ils/ils_editor.js')}"></script>
+</div>

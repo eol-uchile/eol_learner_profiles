@@ -1,0 +1,72 @@
+## mako
+## Parte ILS "config_modal". La renderiza ``eol_learner_profiles.ils.display.render_ils``
+## con el contexto de ``ils_context``; la página la inserta como ``${ils['config_modal']}``.
+% if is_staff:
+<div class="eol-lp-modal ${'is-open' if config_open else ''}" id="eol-lp-config-modal"
+    role="dialog" aria-modal="true" aria-labelledby="eol-lp-config-title">
+    <div class="eol-lp-modal-backdrop" data-close></div>
+    <div class="eol-lp-modal-dialog">
+        <div class="eol-lp-modal-head">
+            <h3 id="eol-lp-config-title" class="hd hd-3">Configuración ILS del curso</h3>
+            <button type="button" class="eol-lp-modal-close" data-close aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="eol-lp-modal-body">
+            <form method="post" action="${staff_url}" class="eol-lp-staff-form">
+                <input type="hidden" name="csrfmiddlewaretoken" value="${csrf_token}" />
+                <input type="hidden" name="next" value="${page_url | h}" />
+                <input type="hidden" name="action" value="save" />
+
+                <label for="eol-lp-def">Versión del instrumento ILS</label>
+                <select name="ils_definition" id="eol-lp-def">
+                    <option value="">- Usar la versión activa global -</option>
+                    % for d in staff_definitions:
+                    <option value="${d.pk}" ${'selected' if staff_config.ils_definition_id == d.pk else ''}>
+                        ${d.name | h} &middot; v${d.version}${' (activa)' if d.is_active else ''}
+                    </option>
+                    % endfor
+                </select>
+
+                <label for="eol-lp-policy">Política de reutilización de respuestas</label>
+                <select name="reuse_policy" id="eol-lp-policy">
+                    % for value, label in staff_policy_choices:
+                    <option value="${value}" ${'selected' if staff_config.reuse_policy == value else ''}>${label}</option>
+                    % endfor
+                </select>
+
+                <div class="eol-lp-actions">
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <a class="btn btn-link" href="${ils_editor_url}">Abrir editor de instrumentos</a>
+                </div>
+            </form>
+
+            <hr />
+
+            <h4>Solicitar nuevas respuestas</h4>
+            <p>
+                Respuestas vigentes: <strong>${staff_responded_count}</strong> de
+                <strong>${staff_enrolled_count}</strong> estudiantes matriculados.
+            </p>
+            % if staff_config.retake_requested_at:
+            <p class="eol-lp-note eol-lp-note-warn">
+                Re-toma solicitada el ${staff_config.retake_requested_at.strftime('%d/%m/%Y %H:%M')}.
+                Las respuestas anteriores a esa fecha se consideran vencidas.
+            </p>
+            <form method="post" action="${staff_url}">
+                <input type="hidden" name="csrfmiddlewaretoken" value="${csrf_token}" />
+                <input type="hidden" name="next" value="${page_url | h}" />
+                <input type="hidden" name="action" value="clear_retake" />
+                <button type="submit" class="btn btn-default">Cancelar solicitud</button>
+            </form>
+            % else:
+            <form method="post" action="${staff_url}"
+                onsubmit="return confirm('Se pedirá a todos los estudiantes del curso que respondan la encuesta nuevamente. ¿Continuar?');">
+                <input type="hidden" name="csrfmiddlewaretoken" value="${csrf_token}" />
+                <input type="hidden" name="next" value="${page_url | h}" />
+                <input type="hidden" name="action" value="request_retake" />
+                <button type="submit" class="btn btn-primary">Solicitar re-toma a todo el curso</button>
+            </form>
+            % endif
+        </div>
+    </div>
+</div>
+% endif

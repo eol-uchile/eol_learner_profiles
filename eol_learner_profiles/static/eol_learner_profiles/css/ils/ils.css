@@ -1,0 +1,296 @@
+/* eol_learner_profiles - pestaña "Recomendaciones" (encuesta ILS + dashboard) */
+
+.eol-lp {
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* --- Encabezado de la pestaña ------------------------------------------- */
+.eol-lp-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.eol-lp-config-btn {
+    flex: none;
+}
+
+/* --- Cajas -------------------------------------------------------------- */
+.eol-lp-box {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+}
+
+.eol-lp-box h3 {
+    margin-top: 0;
+    color: #002b49;
+    padding-bottom: 0.5rem;
+}
+
+.eol-lp-locked {
+    text-align: center;
+    color: #6c757d;
+}
+
+.eol-lp-note {
+    background: #eef4fb;
+    padding: 0.75rem 1rem;
+    border-radius: 0 4px 4px 0;
+    margin: 0 0 1rem;
+}
+
+.eol-lp-note-ok {
+    background: #d4edda;
+    color: #155724;
+}
+
+.eol-lp-note-warn {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.eol-lp-actions {
+    margin-top: 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* --- Encuesta --------------------------------------------------------- */
+.ils-section {
+    margin-bottom: 2rem;
+}
+
+.ils-section h4 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.ils-question-block {
+    background: #f8f9fa;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 0 4px 4px 0;
+}
+
+.ils-option {
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ils-option label {
+    cursor: pointer;
+    font-weight: normal;
+}
+
+.ils-other-input {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.ils-likert-wrap {
+    overflow-x: auto;
+}
+
+.ils-likert-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0 1.5rem;
+}
+
+.ils-likert-table th,
+.ils-likert-table td {
+    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.ils-likert-table th:first-child,
+.ils-likert-table td:first-child {
+    text-align: left;
+    width: 45%;
+    font-weight: 500;
+}
+
+.ils-likert-table thead th {
+    background: #f1f3f5;
+    color: #495057;
+}
+
+.ils-likert-table tbody tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.ils-likert-row-missing td {
+    background: #fff3cd !important;
+}
+
+/* --- Dashboard ------------------------------------------------------- */
+/* --- Staff --------------------------------------------------------- */
+.eol-lp-staff-form label {
+    display: block;
+    margin: 1rem 0 0.35rem;
+    font-weight: 600;
+}
+
+.eol-lp-staff-form select {
+    min-width: 320px;
+    max-width: 100%;
+    padding: 0.4rem;
+}
+
+/* --- Tarjeta de encuesta (colapsable + paginada) ------------------- */
+.eol-lp-survey-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.eol-lp-survey-head h3 {
+    margin: 0;
+}
+
+.eol-lp-survey-status {
+    margin: 0.25rem 0 0;
+    color: #155724;
+}
+
+.eol-lp-survey-toggle {
+    flex: none;
+    white-space: nowrap;
+}
+
+.eol-lp-survey-card .eol-lp-toggle-close {
+    display: none;
+}
+
+.eol-lp-survey-card:not(.is-collapsed) .eol-lp-toggle-open {
+    display: none;
+}
+
+.eol-lp-survey-card:not(.is-collapsed) .eol-lp-toggle-close {
+    display: inline;
+}
+
+.eol-lp-survey-body {
+    margin-top: 1rem;
+}
+
+.ils-section-title {
+    color: #333;
+    margin: 1.5rem 0 1rem;
+}
+
+.eol-lp-survey-page:first-child .ils-section-title:first-child {
+    margin-top: 0;
+}
+
+.eol-lp-survey-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e6e6e6;
+}
+
+.eol-lp-nav-status {
+    margin-left: auto;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.eol-lp-survey-cancel {
+    margin: 0.75rem 0 0;
+}
+
+.eol-lp-survey-review .ils-option input,
+.eol-lp-survey-review .ils-likert-table input,
+.eol-lp-survey-review .ils-other-input {
+    opacity: 0.9;
+}
+
+/* --- Modal de configuración -------------------------------------- */
+.eol-lp-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 10000;
+}
+
+.eol-lp-modal.is-open {
+    display: block;
+}
+
+.eol-lp-modal-backdrop {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.eol-lp-modal-dialog {
+    position: relative;
+    background: #ffffff;
+    width: 92%;
+    max-width: 640px;
+    margin: 5vh auto;
+    max-height: 88vh;
+    overflow-y: auto;
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem 1.5rem;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+}
+
+.eol-lp-modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.eol-lp-modal-head h3 {
+    margin: 0;
+}
+
+.eol-lp-modal-close {
+    flex: none;
+    border: none;
+    background: none;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #6c757d;
+}
+
+.eol-lp-modal-body {
+    margin-top: 1rem;
+}
+
+.eol-lp-modal-body hr {
+    margin: 1.5rem 0;
+    border: none;
+    border-top: 1px solid #e6e6e6;
+}
+

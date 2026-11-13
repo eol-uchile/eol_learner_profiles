@@ -1,0 +1,190 @@
+/* Editor de instrumentos ILS.
+   SÓLO diagramación: no se tocan colores, tipografías ni tamaños de fuente;
+   todo lo visual lo aporta el tema de Open edX. Todo va bajo .ils-editor. */
+
+.ils-editor {
+    max-width: 1200px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+}
+
+/* --- barra superior (lista y detalle) --- */
+.ils-editor .ils-editor-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.ils-editor .ils-editor-topbar h1 {
+    margin: 0.25rem 0 0;
+}
+
+.ils-editor .ils-editor-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.ils-editor .ils-editor-back {
+    display: inline-block;
+    margin-bottom: 0.25rem;
+}
+
+/* --- listado --- */
+.ils-editor .ils-editor-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.ils-editor .ils-editor-table th,
+.ils-editor .ils-editor-table td {
+    padding: 0.55rem 0.9rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.ils-editor .ils-editor-table th:nth-child(2),
+.ils-editor .ils-editor-table td:nth-child(2) {
+    white-space: nowrap;
+}
+
+.ils-editor .ils-editor-table td:last-child,
+.ils-editor .ils-editor-table th:last-child {
+    white-space: nowrap;
+}
+
+.ils-editor .ils-badge {
+    display: inline-block;
+    padding: 0.1rem 0.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+/* --- detalle: dos columnas --- */
+.ils-editor .ils-editor-panes {
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+.ils-editor .ils-pane {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.ils-editor .ils-pane-editor {
+    display: flex;
+    flex-direction: column;
+}
+
+.ils-editor .ils-pane-preview {
+    position: sticky;
+    top: 1rem;
+}
+
+.ils-editor .ils-form-group {
+    margin-bottom: 1rem;
+}
+
+.ils-editor .ils-form-inline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ils-editor .ils-form-inline label {
+    margin: 0;
+}
+
+.ils-editor .ils-form-grow {
+    flex: 1;
+}
+
+.ils-editor label {
+    display: block;
+    margin-bottom: 0.35rem;
+}
+
+.ils-editor #name {
+    width: 100%;
+}
+
+.ils-editor textarea {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.ils-editor #markdown_content {
+    min-height: 480px;
+}
+
+.ils-editor .ils-hint {
+    margin: 0.35rem 0 0.5rem;
+}
+
+.ils-editor .ils-editor-error {
+    padding: 0.6rem 0.9rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+/* --- previsualización (HTML generado por ils_editor.js) --- */
+.ils-editor .preview-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+}
+
+.ils-editor .preview-question {
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.15);
+}
+
+.ils-editor table.likert-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+}
+
+.ils-editor table.likert-table th,
+.ils-editor table.likert-table td {
+    padding: 0.4rem 0.5rem;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.ils-editor table.likert-table th:first-child,
+.ils-editor table.likert-table td:first-child {
+    text-align: left;
+}
+
+@media (max-width: 900px) {
+    .ils-editor .ils-editor-panes {
+        flex-direction: column;
+    }
+    .ils-editor .ils-pane-preview {
+        position: static;
+        width: 100%;
+    }
+}
+
+.ils-editor .preview-pagelabel {
+    margin: 0 0 0.4rem;
+    font-weight: 600;
+}
+.ils-editor .preview-pagebreak {
+    text-align: center;
+    margin: 1.25rem 0;
+    padding: 0.3rem 0;
+    border-top: 2px dashed rgba(0, 0, 0, 0.25);
+    color: rgba(0, 0, 0, 0.55);
+    font-size: 0.85rem;
+}
