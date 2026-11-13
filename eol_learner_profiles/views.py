@@ -4,11 +4,17 @@ import logging
 import six
 
 from django.conf import settings
-from django.http import Http404
-from django.shortcuts import render
+from django.contrib.auth.models import User
+from django.core.exceptions import PermissionDenied
+from django.http import Http404, HttpResponse, JsonResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse
 import random
+
+# Internal project dependencies
+from .courseware import load_course
+from .ils.display import render_ils_fragment
 
 # Edx dependencies
 from lms.djangoapps.courseware.access import has_access
@@ -98,17 +104,20 @@ def get_evaluation_grades(user, course, uid, use_mock_evals):
 
 class EolLearnerProfileFragmentView(EdxFragmentView):
     def render_to_fragment(self, request, course_id, **kwargs):
-        course_key = CourseKey.from_string(course_id)
-        course = get_course_with_access(request.user, "load", course_key)
-
-        staff_access = bool(has_access(request.user, 'staff', course))
-        data_researcher_access = request.user.has_perm(permissions.CAN_RESEARCH, course_key)
-        if not (staff_access or data_researcher_access):
-            raise Http404()
+        course_key, course, is_staff = load_course(request, course_id)
 
         context = self.get_context(request, course_id, course, course_key)
+        context['ils_fragment'] = render_ils_fragment(request, course, course_key, is_staff)
         html = render_to_string('eol_learner_profiles/learner_profile_fragment.html', context)
         return Fragment(html)
+
+    def render_standalone_response(self, request, fragment, **kwargs):
+        """
+        El template ya es una página completa (hereda ``/main.html``): se entrega
+        tal cual, sin el envoltorio ``fragments/standalone-page-fragment.html``
+        de EdxFragmentView, que la anidaba dentro de otra página.
+        """
+        return HttpResponse(fragment.content)
 
     def get_context(self, request, course_id, course, course_key):
         uid = request.user.id
