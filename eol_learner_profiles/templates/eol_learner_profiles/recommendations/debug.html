@@ -1,0 +1,79 @@
+## mako
+## Página de debug de recomendaciones (sólo staff):
+## courses/<course_id>/learner_profile/recomendation_debug
+## La renderiza ``eol_learner_profiles.recommendations.debug.RecommendationDebugView``.
+<%! from django.utils.translation import ugettext as _ %>
+<%namespace name='static' file='/static_content.html'/>
+<%inherit file="/main.html" />
+<%block name="bodyclass">view-in-course</%block>
+<%block name="pagetitle">${_('Debug de recomendaciones')}</%block>
+<%block name="headextra">
+<%static:css group='style-course'/>
+## Mismo marco de página que la pestaña (cabecera, pestañas del curso y #main).
+<link rel="stylesheet" type="text/css" href="${static.url('eol_learner_profiles/css/learner_profile.css')}">
+<link rel="stylesheet" type="text/css" href="${static.url('eol_learner_profiles/css/ils/ils.css')}">
+<style>
+    .eol-rd-note { background: #fff3cd; padding: .75rem 1rem; border-radius: 4px; margin: 0 0 1rem; }
+    .eol-rd-form { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .eol-rd-graph { border: 1px solid #ddd; border-radius: 6px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; }
+    .eol-rd-graph h4 { margin-top: 0; }
+    .eol-rd-table { border-collapse: collapse; width: 100%; margin-bottom: 1rem; }
+    .eol-rd-table th, .eol-rd-table td { border: 1px solid #e3e3e3; padding: .4rem .6rem; text-align: left; }
+    .eol-rd-table td.num { font-variant-numeric: tabular-nums; text-align: right; }
+    .eol-rd-level { display: inline-block; padding: .05rem .5rem; border-radius: 999px; font-size: .85rem; background: #eee; }
+    .eol-rd-level.low { background: #f8d7da; } .eol-rd-level.mid { background: #fff3cd; } .eol-rd-level.high { background: #d4edda; }
+    .eol-rd-text { white-space: pre-wrap; background: #f8f9fa; padding: .75rem 1rem; border-radius: 4px; margin: 0; }
+    .eol-rd-missing { color: #a00; }
+</style>
+</%block>
+<%def name="fmt(value)">${'-' if value is None else ('%.2f' % value)}</%def>
+
+<%include file="/courseware/course_navigation.html" args="active_page='eol_learner_profiles'" />
+
+<main id="main" aria-label="Content" tabindex="-1">
+<section class="eol-rd" id="eol-rd">
+    <h2 class="hd hd-2">Debug de recomendaciones</h2>
+    <p class="eol-rd-note">
+        Sólo equipo docente. Las métricas vienen de datos de prueba (<code>data/dummy_metrics.json</code>),
+        no de la API. Caso elegido con tu ILS: <strong>${case | h}</strong>. Grupo: ${cohort_size} estudiantes
+        (P33 y P66 se calculan sobre todos ellos).
+    </p>
+
+    <form method="get" class="eol-rd-form">
+        <label for="eol-rd-student">Estudiante del mock</label>
+        <select name="debug_student" id="eol-rd-student" onchange="this.form.submit()">
+            % for name in usernames:
+            <option value="${name | h}" ${'selected' if name == selected_username else ''}>${name | h}</option>
+            % endfor
+        </select>
+        <noscript><button type="submit" class="btn btn-default">Ver</button></noscript>
+    </form>
+
+    % for graph in graphs:
+    <section class="eol-rd-graph" id="eol-rd-${graph['key']}">
+        <h4>${graph['label'] | h}</h4>
+        <table class="eol-rd-table">
+            <thead>
+                <tr><th>Métrica</th><th>Valor del estudiante</th><th>P33 del grupo</th><th>P66 del grupo</th><th>Nivel</th></tr>
+            </thead>
+            <tbody>
+                % for m in graph['metrics']:
+                <tr>
+                    <td><strong>${m['name']}</strong> <small>${m['unit'] | h}</small></td>
+                    <td class="num">${fmt(m['value'])}</td>
+                    <td class="num">${fmt(m['p33'])}</td>
+                    <td class="num">${fmt(m['p66'])}</td>
+                    <td><span class="eol-rd-level ${m['level'] or ''}">${m['level'] or 'sin datos'}</span></td>
+                </tr>
+                % endfor
+            </tbody>
+        </table>
+        % if graph['text']:
+        <p class="eol-rd-text">${graph['text'] | h}</p>
+        % else:
+        <p class="eol-rd-missing">Sin recomendación: falta alguna métrica o no hay texto para esta combinación en el caso, en la tabla Recommendation.</p>
+        % endif
+    </section>
+    % endfor
+</section>
+</main>
