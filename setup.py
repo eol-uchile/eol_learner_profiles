@@ -13,8 +13,13 @@ setuptools.setup(
     package_data={
         "eol_learner_profiles": [
             "templates/eol_learner_profiles/*.html",
+            "templates/eol_learner_profiles/*/*.html",
             "static/eol_learner_profiles/css/*.css",
+            "static/eol_learner_profiles/css/*/*.css",
             "static/eol_learner_profiles/js/*.js",
+            "static/eol_learner_profiles/js/*/*.js",
+            "ils/examples/*.md",
+            "data/*.json",
         ],
     },
     classifiers=[
@@ -32,6 +37,5 @@ setuptools.setup(
         "openedx.course_tab": [
             "eol_learner_profiles = eol_learner_profiles.plugins:EolLearnerProfileTab",
         ],
-        
     },
 )
