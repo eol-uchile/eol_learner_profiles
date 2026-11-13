@@ -12,7 +12,7 @@ class EolLearnerProfileTab(TabFragmentViewMixin, EnrolledTab):
     title = ugettext_noop('Recomendaciones')
     priority = None
     view_name = 'learner_profile_view'
-    fragment_view_name = 'eol_learner_profiles.views.EolCompletionFragmentView'
+    fragment_view_name = 'eol_learner_profiles.views.EolLearnerProfileFragmentView'
     is_hideable = False
     is_default = True
     body_class = 'eol_learner_profiles'
